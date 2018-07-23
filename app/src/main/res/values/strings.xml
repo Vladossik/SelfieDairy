@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Selfie_app</string>
+    <string name="welcome">Selfie Everyday</string>
+    <string name="newPas">Enter new password</string>
+    <string name="againPas">Enter the password again</string>
+    <string name="enterPas">Enter password</string>
+    <string name="buttonSave">Save</string>
+    <string name="buttonEnter">Enter</string>
+    <string name="smallText">Keep funny moments</string>
+    <string name="done">Done</string>
+</resources>
