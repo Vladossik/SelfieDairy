@@ -2,7 +2,6 @@ package com.vlada.selfie_app;
 
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPagerAdapter adapter =  new ViewPagerAdapter(getSupportFragmentManager());
         //adding fragments
-        adapter.AddFragment(new WaitingFragmentActivity(), "Expect");
-        adapter.AddFragment(new DoneFragmentActivity(),"Done");
+        adapter.addFragment(new WaitingFragment(), "Expect");
+        adapter.addFragment(new DoneFragment(),"Done");
 
         //adapter Setup
         viewPager.setAdapter(adapter);

@@ -19,8 +19,6 @@
         <activity android:name=".CreatePasswordActivity" />
         <activity android:name=".EnterPasswordActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".DoneFragmentActivity" />
-        <activity android:name=".WaitingFragmentActivity"></activity>
     </application>
 
 </manifest>

@@ -9,11 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class DoneFragmentActivity extends Fragment {
+public class DoneFragment extends Fragment {
 
     View view;
 
-    public DoneFragmentActivity(){
+    public DoneFragment(){
     }
 
     @Nullable

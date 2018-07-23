@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class WaitingFragmentActivity extends Fragment {
+public class WaitingFragment extends Fragment {
 
     View view;
 
-    public WaitingFragmentActivity(){
+    public WaitingFragment(){
     }
 
     @Nullable
