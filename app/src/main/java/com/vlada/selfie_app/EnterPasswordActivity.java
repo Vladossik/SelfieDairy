@@ -43,8 +43,6 @@ public class EnterPasswordActivity extends AppCompatActivity {
                     Toast.makeText(EnterPasswordActivity.this,"Wrong password!",Toast.LENGTH_SHORT).show();
                 }
             }
-        });{
-
-        }
+        });
     }
 }
