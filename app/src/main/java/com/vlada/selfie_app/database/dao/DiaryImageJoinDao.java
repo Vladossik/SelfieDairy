@@ -19,10 +19,10 @@ public interface DiaryImageJoinDao {
     @Query("SELECT * FROM Diary INNER JOIN DiaryImageJoin ON " +
             "Diary.id=DiaryImageJoin.diaryId WHERE " +
             "DiaryImageJoin.imageId=:imageId")
-    List<Diary> getUsersForRepository(final int imageId);
+    List<Diary> getDiariesForImages(final int imageId);
     
     @Query("SELECT * FROM ImageSource INNER JOIN DiaryImageJoin ON " +
             "ImageSource.id=DiaryImageJoin.imageId WHERE " +
             "DiaryImageJoin.diaryId=:diaryId")
-    List<ImageSource> getRepositoriesForUsers(final int diaryId);
+    List<ImageSource> getImagesForDiaries(final int diaryId);
 }

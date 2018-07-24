@@ -17,6 +17,7 @@ public class Diary {
     @NonNull
     private String description;
     
+    /** reminder notification time*/
     private Calendar reminder;
     
     @NonNull
@@ -55,10 +56,12 @@ public class Diary {
         this.description = description;
     }
     
+    /** get reminder notification time*/
     public Calendar getReminder() {
         return reminder;
     }
     
+    /** set reminder notification time*/
     public void setReminder(Calendar reminder) {
         this.reminder = reminder;
     }

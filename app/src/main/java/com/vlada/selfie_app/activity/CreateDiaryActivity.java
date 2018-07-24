@@ -28,7 +28,6 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private Calendar reminderTime = Calendar.getInstance();
     
     
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +84,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         Toast.makeText(this, "in saveNewDiary:\nname = " + etName.getText()
                 + "reminder time = " + btnSetTime.getText(), Toast.LENGTH_SHORT).show();
         
-        // TODO add new selfie-Diary in database
+        // TODO add new selfie-Event in database
         
         
         finish();
@@ -99,7 +98,9 @@ public class CreateDiaryActivity extends AppCompatActivity {
                 .show();
     }
     
-    /** Time picker choice handler*/
+    /**
+     * Time picker choice handler
+     */
     TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             reminderTime.set(Calendar.HOUR_OF_DAY, hourOfDay);

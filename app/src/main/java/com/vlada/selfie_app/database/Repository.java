@@ -13,7 +13,9 @@ import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.util.List;
 
-/** Main class for interacting with data*/
+/**
+ * Main class for interacting with data
+ */
 public class Repository {
     
     private DiaryDao diaryDao;
@@ -58,8 +60,8 @@ public class Repository {
     // TODO: 24.07.2018 all db inserts in asyncTask
     
     // maybe do it with simple threads
-    
-    
+
+
 //    private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
 //        
 //        private WordDao mAsyncTaskDao;
