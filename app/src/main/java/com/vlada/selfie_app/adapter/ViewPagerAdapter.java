@@ -1,4 +1,4 @@
-package com.vlada.selfie_app;
+package com.vlada.selfie_app.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;

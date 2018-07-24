@@ -1,4 +1,4 @@
-package com.vlada.selfie_app;
+package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.vlada.selfie_app.R;
 
 import java.util.Calendar;
 

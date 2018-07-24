@@ -1,4 +1,4 @@
-package com.vlada.selfie_app;
+package com.vlada.selfie_app.activity;
 
 import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
@@ -8,6 +8,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.View;
+
+import com.vlada.selfie_app.fragment.DoneFragment;
+import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.adapter.ViewPagerAdapter;
+import com.vlada.selfie_app.fragment.WaitingFragment;
 
 public class MainActivity extends FragmentActivity {
     

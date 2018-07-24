@@ -1,4 +1,4 @@
-package com.vlada.selfie_app;
+package com.vlada.selfie_app.fragment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.vlada.selfie_app.R;
 
 public class DoneFragment extends Fragment {
 

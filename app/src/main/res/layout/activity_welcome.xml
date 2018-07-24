@@ -9,7 +9,7 @@
     android:gravity="center"
     android:layout_gravity="center"
     android:background="@color/colorPrimaryDark"
-    tools:context=".WelcomeActivity">
+    tools:context=".activity.WelcomeActivity">
 
     <TextView
         android:id="@+id/program_name"
