@@ -13,16 +13,17 @@ import com.vlada.selfie_app.R;
 
 
 public class WaitingFragment extends Fragment {
-
+    
     View view;
-
-    public WaitingFragment(){
+    
+    public WaitingFragment() {
+        
     }
-
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_waiting_fragment,container,false);
+        view = inflater.inflate(R.layout.activity_waiting_fragment, container, false);
         return view;
     }
 }

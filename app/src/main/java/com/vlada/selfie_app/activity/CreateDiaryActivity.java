@@ -26,7 +26,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private Button btnSetTime;
     
     private Calendar reminderTime = Calendar.getInstance();
-    ;
+    
     
     
     @Override
@@ -85,7 +85,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         Toast.makeText(this, "in saveNewDiary:\nname = " + etName.getText()
                 + "reminder time = " + btnSetTime.getText(), Toast.LENGTH_SHORT).show();
         
-        // TODO add new selfie-Event in database
+        // TODO add new selfie-Diary in database
         
         
         finish();
