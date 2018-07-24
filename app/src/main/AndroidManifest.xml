@@ -20,7 +20,7 @@
         <activity android:name=".EnterPasswordActivity"/>
         <activity android:name=".MainActivity"/>
         <activity
-            android:name=".CreateEventActivity"
+            android:name=".CreateDiaryActivity"
             android:label="@string/title_activity_create_event"
             android:theme="@style/AppTheme">
         </activity>

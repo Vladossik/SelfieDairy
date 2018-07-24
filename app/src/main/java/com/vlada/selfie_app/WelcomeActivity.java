@@ -32,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
 //                    finish();
 //                } else {
 //                    //if there ia s password
-//                    Intent intent = new Intent(getApplicationContext(), EnterPasswordActivity.class);
+//                    Intent intent = new Intent(WelcomeActivity.this, EnterPasswordActivity.class);
 //                    startActivity(intent);
 //                    finish();
 //                }

@@ -1,6 +1,5 @@
 package com.vlada.selfie_app;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -9,10 +8,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TimePicker;
-
-import java.util.Calendar;
 
 public class MainActivity extends FragmentActivity {
     
@@ -38,7 +33,6 @@ public class MainActivity extends FragmentActivity {
         //adapter Setup
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-    
         
         // fab setup
         
@@ -47,7 +41,7 @@ public class MainActivity extends FragmentActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CreateEventActivity.class);
+                Intent intent = new Intent(MainActivity.this, CreateDiaryActivity.class);
                 startActivity(intent);
             }
         });

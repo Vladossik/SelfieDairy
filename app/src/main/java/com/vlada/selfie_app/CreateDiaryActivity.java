@@ -2,8 +2,6 @@ package com.vlada.selfie_app;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -16,10 +14,9 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateDiaryActivity extends AppCompatActivity {
     
     
     private EditText etName;
@@ -33,9 +30,9 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_event);
+        setContentView(R.layout.activity_create_diary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Create new event");
+        toolbar.setTitle("Create new diary");
         setSupportActionBar(toolbar);
         
         
@@ -62,7 +59,7 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.create_event_menu, menu);
+        inflater.inflate(R.menu.create_diary_menu, menu);
         return true;
     }
     
@@ -71,7 +68,7 @@ public class CreateEventActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.itemDone:
-                saveNewEvent();
+                saveNewDiary();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -80,10 +77,10 @@ public class CreateEventActivity extends AppCompatActivity {
     
     
     /**
-     * Creates new event in db and finishes the activity in case of success
+     * Creates new diary in db and finishes the activity in case of success
      */
-    private void saveNewEvent() {
-        Toast.makeText(this, "in saveNewEvent:\nname = " + etName.getText()
+    private void saveNewDiary() {
+        Toast.makeText(this, "in saveNewDiary:\nname = " + etName.getText()
                 + "reminder time = " + btnSetTime.getText(), Toast.LENGTH_SHORT).show();
         
         // TODO add new selfie-Event in database
@@ -94,13 +91,13 @@ public class CreateEventActivity extends AppCompatActivity {
     
     
     public void btnSetTimeClick(View v) {
-        new TimePickerDialog(CreateEventActivity.this, onTimeSetListener,
+        new TimePickerDialog(CreateDiaryActivity.this, onTimeSetListener,
                 reminderTime.get(Calendar.HOUR_OF_DAY),
                 reminderTime.get(Calendar.MINUTE), true)
                 .show();
     }
     
-    // установка обработчика выбора времени
+    /** Time picker choice handler*/
     TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             reminderTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
