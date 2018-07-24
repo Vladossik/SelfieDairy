@@ -47,7 +47,7 @@ public class CreatePasswordActivity extends AppCompatActivity {
                         finish();
                     } else{
                         //no match on the passwords
-                        Toast.makeText(CreatePasswordActivity.this,"Password doesn't match!",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreatePasswordActivity.this,"Password doesn'onTimeSetListener match!",Toast.LENGTH_SHORT).show();
                     }
 
                 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vlada.selfie_app">
+          package="com.vlada.selfie_app">
 
     <application
         android:allowBackup="true"
@@ -11,14 +11,19 @@
         android:theme="@style/AppTheme">
         <activity android:name=".WelcomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".CreatePasswordActivity" />
-        <activity android:name=".EnterPasswordActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".CreatePasswordActivity"/>
+        <activity android:name=".EnterPasswordActivity"/>
+        <activity android:name=".MainActivity"/>
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="@string/title_activity_create_event"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>
