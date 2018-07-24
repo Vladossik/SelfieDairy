@@ -3,6 +3,7 @@ package com.vlada.selfie_app.database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
@@ -13,6 +14,7 @@ import com.vlada.selfie_app.database.entity.DiaryImageJoin;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 @Database(entities = {Diary.class, ImageSource.class, DiaryImageJoin.class}, version = 1)
+@TypeConverters({Converters.class})
 public abstract class MyRoomDatabase extends RoomDatabase {
     
     public abstract DiaryDao diaryDao();

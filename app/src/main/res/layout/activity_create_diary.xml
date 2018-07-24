@@ -42,18 +42,32 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Remind"
+            android:text="Reminder time:"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="18sp"/>
 
         <Button
-            android:id="@+id/btnSetTime"
+            android:id="@+id/btnReminderTime"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="btnSetTimeClick"
+            android:onClick="btnReminderTimeClick"
             android:text="set time"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reminder frequency:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="18sp"/>
+
+        <Spinner
+            android:id="@+id/spnRemindFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
 
     </LinearLayout>
 

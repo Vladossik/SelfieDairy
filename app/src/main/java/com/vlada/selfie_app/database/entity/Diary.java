@@ -78,4 +78,12 @@ public class Diary {
     public Calendar getDateOfCreate() {
         return dateOfCreate;
     }
+    
+    public void setDateOfCreate(@NonNull Calendar dateOfCreate) {
+        this.dateOfCreate = dateOfCreate;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
 }
