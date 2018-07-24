@@ -23,8 +23,8 @@ public class Repository {
     private LiveData<List<Diary>> allDiaries;
     private LiveData<List<ImageSource>> allImages;
     
-    public Repository(Context context) {
-        MyRoomDatabase db = MyRoomDatabase.getDatabase(context);
+    public Repository(Application application) {
+        MyRoomDatabase db = MyRoomDatabase.getDatabase(application);
         
         diaryDao = db.diaryDao();
         imageSourceDao = db.imageSourceDao();
