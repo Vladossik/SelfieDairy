@@ -26,7 +26,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        tabLayout = (TabLayout) findViewById(R.id.tabLayoutId);
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 //        appBarLayout = (AppBarLayout) findViewById(R.id.appBarId);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         
