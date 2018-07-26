@@ -14,7 +14,6 @@ public class Diary {
     @NonNull
     private String name;
     
-    @NonNull
     private String description;
     
     /** reminder notification time*/
@@ -34,6 +33,21 @@ public class Diary {
         dateOfCreate = Calendar.getInstance();
     }
     
+    public Diary(@NonNull String name, String description, Calendar reminder, RemindFrequency remindFrequency) {
+        // setup dateOfCreate in this()
+        this();
+        this.name = name;
+        this.description = description;
+        this.reminder = reminder;
+        this.remindFrequency = remindFrequency;
+    }
+    
+    public Diary(@NonNull String name) {
+        this();
+        this.name = name;
+    }
+    
+    /** Warning! id will be unset when you retrieve this field right after creating!!!*/
     public int getId() {
         return id;
     }
@@ -47,12 +61,11 @@ public class Diary {
         this.name = name;
     }
     
-    @NonNull
     public String getDescription() {
         return description;
     }
     
-    public void setDescription(@NonNull String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
     

@@ -29,7 +29,7 @@ public abstract class MyRoomDatabase extends RoomDatabase {
             synchronized (MyRoomDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            MyRoomDatabase.class, "database")// name of database in file system
+                            MyRoomDatabase.class, "database")// name of the database in file system
                             .build();
                     
                 }

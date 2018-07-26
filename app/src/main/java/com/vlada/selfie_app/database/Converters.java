@@ -10,7 +10,7 @@ import java.util.Calendar;
 public class Converters {
     
     @TypeConverter
-    public static Calendar calendarToMillis(Long millis) {
+    public static Calendar millisToCalendar(Long millis) {
         if (millis == null)
             return null;
         Calendar calendar = Calendar.getInstance();
@@ -19,12 +19,14 @@ public class Converters {
     }
     
     @TypeConverter
-    public static Long millisToCalendar(Calendar calendar) {
+    public static Long calendarToMillis(Calendar calendar) {
         return calendar == null ? null : calendar.getTimeInMillis();
     }
     
     @TypeConverter
-    public static RemindFrequency codeToRemindFrequency(int code) {
+    public static RemindFrequency codeToRemindFrequency(Integer code) {
+        if (code == null)
+            return null;
         
         for (RemindFrequency freq : RemindFrequency.values()) {
             if (freq.code == code) {
@@ -36,9 +38,7 @@ public class Converters {
     }
     
     @TypeConverter
-    public static int remindFrequencyToCode(RemindFrequency remindFrequency) {
-        return remindFrequency.code;
+    public static Integer remindFrequencyToCode(RemindFrequency remindFrequency) {
+        return remindFrequency == null ? null : remindFrequency.code;
     }
-    
-    
 }

@@ -13,8 +13,11 @@ import java.util.List;
 @Dao
 public interface ImageSourceDao {
     
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(ImageSource imageSource);
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrReplace(ImageSource imageSource);
     
     @Query("DELETE FROM ImageSource")
     void deleteAll();
