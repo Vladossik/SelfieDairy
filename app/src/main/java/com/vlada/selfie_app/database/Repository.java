@@ -25,8 +25,10 @@ public class Repository {
     private LiveData<List<Diary>> allDiaries;
     private LiveData<List<ImageSource>> allImages;
     
+    private MyRoomDatabase db;
+    
     public Repository(Application application) {
-        MyRoomDatabase db = MyRoomDatabase.getDatabase(application);
+        db = MyRoomDatabase.getDatabase(application);
         
         diaryDao = db.diaryDao();
         imageSourceDao = db.imageSourceDao();
@@ -34,19 +36,17 @@ public class Repository {
         
         allDiaries = diaryDao.getAllDiaries();
         allImages = imageSourceDao.getAllImages();
+    }
+    
+    public Repository(MyRoomDatabase db) {
+        this.db = db;
         
-    }
-    
-    public DiaryDao getDiaryDao() {
-        return diaryDao;
-    }
-    
-    public ImageSourceDao getImageSourceDao() {
-        return imageSourceDao;
-    }
-    
-    public DiaryImageJoinDao getDiaryImageJoinDao() {
-        return diaryImageJoinDao;
+        diaryDao = db.diaryDao();
+        imageSourceDao = db.imageSourceDao();
+        diaryImageJoinDao = db.diaryImageJoinDao();
+        
+        allDiaries = diaryDao.getAllDiaries();
+        allImages = imageSourceDao.getAllImages();
     }
     
     public LiveData<List<Diary>> getAllDiaries() {
@@ -57,24 +57,67 @@ public class Repository {
         return allImages;
     }
     
+    public MyRoomDatabase getDatabase() {
+        return db;
+    }
+    
+    
     // TODO: 24.07.2018 all db inserts in asyncTask
     
-    // maybe do it with simple threads
-
-
-//    private static class insertAsyncTask extends AsyncTask<Word, Void, Void> {
-//        
-//        private WordDao mAsyncTaskDao;
-//        
-//        insertAsyncTask(WordDao dao) {
-//            mAsyncTaskDao = dao;
-//        }
-//        
-//        @Override
-//        protected Void doInBackground(final Word... params) {
-//            mAsyncTaskDao.insert(params[0]);
-//            return null;
-//        }
-//    }
     
+    /** In separate thread inserts diary and updates id in diary object.
+     * If diary with such id already exists - throws an exception.
+     * */
+    public void insertDiary(final Diary diary) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+    
+                int newId = (int) diaryDao.insert(diary);
+                diary.setId(newId);
+            }
+        }).start();
+    }
+    
+    /** In separate thread updates diary.
+     * If diary with such id does not exists - nothing happens. */
+    public void updateDiary(final Diary diary) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+            diaryDao.update(diary);
+            }
+        }).start();
+    }
+    
+    /** In separate thread updates diary from db or creates it*/
+    public void deleteDiary(final Diary diary) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+    
+                int newId = (int) diaryDao.insert(diary);
+                diary.setId(newId);
+            }
+        }).start();
+    }
+    
+    
+    
+    
+    /** In separate thread inserts image in db if it does not exist and binds it to the diary by id*/
+    public void insertImageInDiary(final ImageSource imageSource, final int diaryId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+                // if already exists - nothing changes
+                imageSourceDao.insert(imageSource);
+                
+                diaryImageJoinDao.insert(new DiaryImageJoin(diaryId, imageSource.getSource()));
+                
+                
+            }
+        }).start();
+    }
 }

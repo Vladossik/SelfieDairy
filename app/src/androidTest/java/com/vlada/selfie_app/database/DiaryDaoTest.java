@@ -9,10 +9,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
 
 public class DiaryDaoTest extends DatabaseTest {
-
+    
     // before and after have already been defined in super class
     
     
@@ -32,7 +33,9 @@ public class DiaryDaoTest extends DatabaseTest {
     }
     
     
-    /** Checks adding two diaries and reading them in right order*/
+    /**
+     * Checks adding two diaries and reading them in right order
+     */
     @Test
     public void getAllDiaries() throws Exception {
         Diary diary1 = new Diary("name1");
@@ -72,31 +75,12 @@ public class DiaryDaoTest extends DatabaseTest {
         diaryDao.insert(diary1);
         diaryDao.insert(diary2);
         diaryDao.insert(diary3);
-    
-    
-        // check sorting in dateOfCreate order:
+        
+        
         List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
         assertEquals(allDiaries.size(), 3);
         
     }
-    
-    
-    /** Checks searching diaries by name*/
-    @Test
-    public void getByNameTest() throws Exception {
-        Diary diary1 = new Diary("name1");
-        Diary diary2 = new Diary("name2");
-        
-        diaryDao.insert(diary1);
-        diaryDao.insert(diary2);
-        
-        assertEquals(diaryDao.getByName("abc"), null);
-        assertEquals(diaryDao.getByName("name1").getName(), "name1");
-        assertEquals(diaryDao.getByName("name2").getName(), "name2");
-        
-    }
-    
-    
     
     
     @Test
@@ -111,4 +95,83 @@ public class DiaryDaoTest extends DatabaseTest {
         List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
         assertTrue(allDiaries.isEmpty());
     }
+    
+    @Test
+    public void testIdGeneration() throws InterruptedException {
+        Diary diary1 = new Diary("name1");
+        Diary diary2 = new Diary("name2");
+        Diary diary3 = new Diary("name2");
+    
+        // 0 means unset id
+        assertEquals(0, diary1.getId());
+    
+        insertDiaryAndUpdateId(diary1);
+        
+        assertNotSame(0, diary1.getId());
+        
+        insertDiaryAndUpdateId(diary2);
+        insertDiaryAndUpdateId(diary3);
+        
+        assertNotSame(diary1.getId(), diary2.getId());
+        
+//        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+    }
+    
+    
+    @Test
+    public void deleteOneById() throws Exception {
+        Diary diary1 = new Diary("name1");
+        Diary diary2 = new Diary("name2");
+        
+        
+        insertDiaryAndUpdateId(diary1);
+        insertDiaryAndUpdateId(diary2);
+        
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        assertEquals(2, allDiaries.size());
+        
+        diaryDao.deleteById(diary1.getId());
+        
+        allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        assertEquals(1, allDiaries.size());
+    }
+    
+    @Test(expected = Exception.class)
+    public void insertExisting() throws Exception {
+        Diary diary1 = new Diary("name1");
+        
+        
+        
+        insertDiaryAndUpdateId(diary1);
+        insertDiaryAndUpdateId(diary1);
+    }
+    
+    @Test
+    public void update() throws Exception {
+        Diary diary1 = new Diary("name1");
+    
+        insertDiaryAndUpdateId(diary1);
+        
+        diary1.setName("hello");
+        
+        diaryDao.update(diary1);
+        
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        
+        assertEquals(1, allDiaries.size());
+        assertEquals("hello", allDiaries.get(0).getName());
+    }
+    
+    @Test
+    public void updateNotExisting() throws Exception {
+        Diary diary1 = new Diary("name1");
+        
+        // Nothing should happen
+        diaryDao.update(diary1);
+        
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        assertEquals(0, allDiaries.size());
+    }
+    
+    
 }

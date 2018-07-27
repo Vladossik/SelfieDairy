@@ -25,6 +25,8 @@ public class Diary {
     
     private RemindFrequency remindFrequency;
     
+    private boolean isDone = false;
+    
 //    public Diary(@NonNull Calendar dateOfCreate) {
 //        this.dateOfCreate = dateOfCreate;
 //    }
@@ -47,7 +49,7 @@ public class Diary {
         this.name = name;
     }
     
-    /** Warning! id will be unset when you retrieve this field right after creating!!!*/
+    /** Warning! id will be unset (=0) when you retrieve this field right after creating!!!*/
     public int getId() {
         return id;
     }
@@ -98,5 +100,13 @@ public class Diary {
     
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public boolean isDone() {
+        return isDone;
+    }
+    
+    public void setDone(boolean done) {
+        isDone = done;
     }
 }

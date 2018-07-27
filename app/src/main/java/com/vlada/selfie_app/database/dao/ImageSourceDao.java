@@ -16,6 +16,9 @@ public interface ImageSourceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(ImageSource imageSource);
     
+    @Query("DELETE FROM ImageSource WHERE source=:src")
+    void deleteBySrc(String src);
+    
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOrReplace(ImageSource imageSource);
     

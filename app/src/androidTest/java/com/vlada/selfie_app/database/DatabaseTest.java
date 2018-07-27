@@ -79,4 +79,11 @@ public abstract class DatabaseTest {
     <T> T getValueFromLiveData(LiveData<T> liveData) throws InterruptedException {
         return LiveDataTestUtil.getValue(liveData);
     }
+    
+    
+    void insertDiaryAndUpdateId(Diary diary) {
+        int newId = (int) diaryDao.insert(diary);
+        diary.setId(newId);
+    }
+    
 }

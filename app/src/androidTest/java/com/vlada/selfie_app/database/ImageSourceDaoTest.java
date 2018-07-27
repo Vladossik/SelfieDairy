@@ -29,7 +29,7 @@ public class ImageSourceDaoTest extends DatabaseTest {
     }
     
     @Test
-    public void testEqualSources() throws Exception{
+    public void testEqualSources() throws Exception {
         ImageSource image1 = new ImageSource("src1", "hello1");
         ImageSource image2 = new ImageSource("src2", "hello2");
         ImageSource image3 = new ImageSource("src2", "hello3");
@@ -41,7 +41,7 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         List<ImageSource> allImages = LiveDataTestUtil.getValue(imageSourceDao.getAllImages());
         assertEquals("images should be unique", allImages.size(), 2);
-    
+        
         for (ImageSource img : allImages) {
             if (img.getDescription().equals("hello3"))
                 fail("new image with the same source shouldn't replace old");
@@ -50,7 +50,7 @@ public class ImageSourceDaoTest extends DatabaseTest {
     }
     
     @Test
-    public void testInsertWithReplacement() throws Exception{
+    public void insertWithReplacement() throws Exception {
         ImageSource image1 = new ImageSource("src1", "hello1");
         ImageSource image2 = new ImageSource("src2", "hello2");
         ImageSource image3 = new ImageSource("src2", "hello3");
@@ -62,14 +62,32 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         List<ImageSource> allImages = LiveDataTestUtil.getValue(imageSourceDao.getAllImages());
         assertEquals("images should be unique", allImages.size(), 2);
-    
+        
         for (ImageSource img : allImages) {
             if (img.getDescription().equals("hello2"))
                 fail("new image with the same source should replace old");
         }
-        
     }
     
+    
+    @Test
+    public void deleteBySrc() throws InterruptedException {
+        ImageSource image1 = new ImageSource("src1");
+        ImageSource image2 = new ImageSource("src2");
+        imageSourceDao.insert(image1);
+        imageSourceDao.insert(image2);
+        
+        List<ImageSource> allImages = LiveDataTestUtil.getValue(imageSourceDao.getAllImages());
+        assertEquals(2, allImages.size());
+        
+        imageSourceDao.deleteBySrc("src1");
+        
+        allImages = LiveDataTestUtil.getValue(imageSourceDao.getAllImages());
+        assertEquals(1, allImages.size());
+        assertEquals(image2.getSource(), allImages.get(0).getSource());
+        
+        
+    }
     
     @Test
     public void insertImageInDiary() throws Exception {
@@ -78,34 +96,68 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         diary2.setDateOfCreate(calPlusHour(diary1.getDateOfCreate(), 1));
         
-        diaryDao.insert(diary1);
-        diaryDao.insert(diary2);
-    
-        
-        // UPDATE diary objects to get valid generated id!!!
-        
-        // May be unstable for 
-        diary1 = diaryDao.getByName(diary1.getName());
-        diary2 = diaryDao.getByName(diary2.getName());
-        
+        insertDiaryAndUpdateId(diary1);
+        insertDiaryAndUpdateId(diary2);
         
         ImageSource image = new ImageSource("src1");
         imageSourceDao.insert(image);
         
-        DiaryImageJoin diaryImageJoin = new DiaryImageJoin(diary1.getId(), image.getSource());
-    
+        // Insert in first diary
+        diaryImageJoinDao.insert(new DiaryImageJoin(diary1.getId(), image.getSource()));
         
         
-        diaryImageJoinDao.insert(diaryImageJoin);
-        
-        
-        // retreive all images in first diary
+        // retrieve all images in first diary
         List<ImageSource> imagesInDiary1 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary1.getId()));
-    
+        
         assertEquals(imagesInDiary1.size(), 1);
         
         List<ImageSource> imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
         assertEquals(imagesInDiary2.size(), 0);
+        
+        // insert in second diary
+        diaryImageJoinDao.insert(new DiaryImageJoin(diary2.getId(), image.getSource()));
+        
+        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
+        assertEquals(imagesInDiary2.size(), 1);
+        
+        
+        // Try to insert connection again
+        diaryImageJoinDao.insert(new DiaryImageJoin(diary2.getId(), image.getSource()));
+        
+        
+        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
+        assertEquals(imagesInDiary2.size(), 1);
+    }
+    
+    
+    @Test
+    public void deleteImageFromDiary() throws Exception {
+        Diary diary = new Diary("name1");
+        
+        insertDiaryAndUpdateId(diary);
+        
+        ImageSource image = new ImageSource("src1");
+        imageSourceDao.insert(image);
+        
+        // Insert in diary
+        diaryImageJoinDao.insert(new DiaryImageJoin(diary.getId(), image.getSource()));
+        
+        
+        // retrieve all images in diary
+        List<ImageSource> imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        assertEquals(imagesInDiary.size(), 1);
+        
+        // delete from diary
+        diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
+        
+        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        assertEquals(imagesInDiary.size(), 0);
+        
+        // delete from diary again
+        diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
+        
+        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        assertEquals(imagesInDiary.size(), 0);
         
     }
 }

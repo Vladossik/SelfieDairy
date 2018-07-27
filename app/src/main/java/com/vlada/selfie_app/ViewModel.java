@@ -20,28 +20,20 @@ import java.util.List;
  */
 public class ViewModel extends AndroidViewModel {
     
-    private Repository repository;
+    private Repository repo;
     
     public ViewModel(Application application) {
         super(application);
-        repository = new Repository(application);
+        repo = new Repository(application);
         
     }
     
-    public void insert(final Diary diary) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                repository.getDiaryDao().insert(diary);
-            }
-        });
-    }
     
     public LiveData<List<Diary>> getAllDiaries() {
-        return repository.getAllDiaries();
+        return repo.getAllDiaries();
     }
     
-    public Repository getRepository() {
-        return repository;
+    public Repository getRepo() {
+        return repo;
     }
 }
