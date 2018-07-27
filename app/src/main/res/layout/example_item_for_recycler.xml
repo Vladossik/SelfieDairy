@@ -18,7 +18,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:padding="2dp"
-            android:src="@drawable/pictures-folder"/>
+            android:src="@drawable/pictures_folder"/>
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
