@@ -4,10 +4,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 @Entity
-public class Diary {
+public class Diary implements Serializable{
     @PrimaryKey(autoGenerate = true)
     private int id;
     
@@ -108,5 +109,10 @@ public class Diary {
     
     public void setDone(boolean done) {
         isDone = done;
+    }
+    
+    @Override
+    public String toString() {
+        return "Diary(name = " + name + ")";
     }
 }

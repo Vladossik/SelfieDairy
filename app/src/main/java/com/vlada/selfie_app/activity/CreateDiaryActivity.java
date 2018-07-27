@@ -1,6 +1,7 @@
 package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,8 +18,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.RemindFrequency;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 public class CreateDiaryActivity extends AppCompatActivity {
@@ -92,12 +95,13 @@ public class CreateDiaryActivity extends AppCompatActivity {
      * Creates new diary in db and finishes the activity in case of success
      */
     private void saveNewDiary() {
-        Toast.makeText(this, "in saveNewDiary:\nname = " + etName.getText()
-                + "reminder time = " + btnReminderTime.getText(), Toast.LENGTH_SHORT).show();
         
-        // TODO add new selfie-Diary in database
+        Diary diary = new Diary(etName.getText().toString(), etDescription.getText().toString(), null, null);
         
+        Intent intent = new Intent();
         
+        intent.putExtra("diary", (Serializable) diary);
+        setResult(RESULT_OK, intent);
         finish();
     }
     

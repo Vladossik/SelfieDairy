@@ -15,7 +15,6 @@ import java.util.List;
 @Dao
 public interface DiaryDao {
     
-    @Insert
     long insert(Diary diary);
     
     @Update
