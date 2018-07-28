@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     app:cardCornerRadius="4dp"
-    tools:context="com.vlada.selfie_app.fragment.DoneFragment">
+    tools:context="com.vlada.selfie_app.fragment.DiaryListFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

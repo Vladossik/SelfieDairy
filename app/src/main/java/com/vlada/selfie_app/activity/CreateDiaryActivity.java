@@ -1,6 +1,7 @@
 package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
+import android.arch.persistence.room.PrimaryKey;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,8 +33,10 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private Button btnReminderTime;
     private Spinner spnRemindFrequency;
     
-    private Calendar reminderTime = Calendar.getInstance();
-    
+    /**
+     * Diary, which has been sent for editing or new created diary.
+     */
+    Diary diary;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +55,29 @@ public class CreateDiaryActivity extends AppCompatActivity {
         
         btnReminderTime = findViewById(R.id.btnReminderTime);
         
-        updateReminderTimeText();
-        
         // remindTime spinner setup
         spnRemindFrequency = findViewById(R.id.spnRemindFrequency);
         spnRemindFrequency.setAdapter(new ArrayAdapter<>(
                 this, android.R.layout.simple_list_item_1, RemindFrequency.values()));
         spnRemindFrequency.setSelection(0);
         
+        // check if we have old diary to edit
+        
+        if (getIntent().hasExtra("oldDiary")) {
+            diary = (Diary) getIntent().getSerializableExtra("oldDiary");
+            
+            // restore all values from old Diary
+            
+            etName.setText(diary.getName());
+            etDescription.setText(diary.getDescription());
+            
+            spnRemindFrequency.setSelection(diary.getRemindFrequency().ordinal());
+            
+        } else {
+            diary = new Diary();
+        }
+        
+        updateReminderTimeText();
     }
     
     /**
@@ -67,7 +85,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
      */
     private void updateReminderTimeText() {
         btnReminderTime.setText(DateUtils.formatDateTime(this,
-                reminderTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME));
+                diary.getReminder().getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME));
     }
     
     
@@ -83,20 +101,31 @@ public class CreateDiaryActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.itemDone:
-                saveNewDiary();
+                saveDiary();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
     
-    
     /**
-     * Creates new diary in db and finishes the activity in case of success
+     * Builds diary and returns it in case of success to result intent and finishes activity.
      */
-    private void saveNewDiary() {
+    private void saveDiary() {
         
-        Diary diary = new Diary(etName.getText().toString(), etDescription.getText().toString(), null, null);
+        if (etName.getText().toString().equals("")) {
+            Toast.makeText(this, "Name shouldn't be empty.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // update diary fields
+        diary.setName(etName.getText().toString());
+        diary.setDescription(etDescription.getText().toString());
+        
+        int selectedFrequency = spnRemindFrequency.getSelectedItemPosition();
+        diary.setRemindFrequency(RemindFrequency.values()[selectedFrequency]);
+        // Reminder time is updated in time picker handler
+        
         
         Intent intent = new Intent();
         
@@ -108,8 +137,8 @@ public class CreateDiaryActivity extends AppCompatActivity {
     
     public void btnReminderTimeClick(View v) {
         new TimePickerDialog(CreateDiaryActivity.this, onTimeSetListener,
-                reminderTime.get(Calendar.HOUR_OF_DAY),
-                reminderTime.get(Calendar.MINUTE), true)
+                diary.getReminder().get(Calendar.HOUR_OF_DAY),
+                diary.getReminder().get(Calendar.MINUTE), true)
                 .show();
     }
     
@@ -118,8 +147,8 @@ public class CreateDiaryActivity extends AppCompatActivity {
      */
     TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            reminderTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            reminderTime.set(Calendar.MINUTE, minute);
+            diary.getReminder().set(Calendar.HOUR_OF_DAY, hourOfDay);
+            diary.getReminder().set(Calendar.MINUTE, minute);
             updateReminderTimeText();
         }
     };

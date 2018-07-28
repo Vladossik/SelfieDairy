@@ -11,25 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vlada.selfie_app.R;
-import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 
-public class DoneFragment extends Fragment {
+public class DiaryListFragment extends Fragment {
 
     View root;
     RecyclerView recyclerView;
     
-    private DiaryListAdapter rvAdapter;
+    private DiaryListAdapter diaryListAdapter;
     
-    private ViewModel viewModel;
-    
-    public DoneFragment(){
+    public DiaryListFragment(){
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_done, container,false);
+        root = inflater.inflate(R.layout.fragment_diary_list, container,false);
     
         return root;
     }
@@ -40,18 +37,18 @@ public class DoneFragment extends Fragment {
     
     
         recyclerView = root.findViewById(R.id.recyclerView);
-        rvAdapter = new DiaryListAdapter(getContext(), viewModel);
-        recyclerView.setAdapter(rvAdapter);
+//        diaryListAdapter = new DiaryListAdapter(getContext(), viewModel);
+        recyclerView.setAdapter(diaryListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
         
     }
     
-    public DiaryListAdapter getRvAdapter() {
-        return rvAdapter;
+    public DiaryListAdapter getDiaryListAdapter() {
+        return diaryListAdapter;
     }
     
-    public void setViewModel(ViewModel viewModel) {
-        this.viewModel = viewModel;
+    public void setDiaryListAdapter(DiaryListAdapter diaryListAdapter) {
+        this.diaryListAdapter = diaryListAdapter;
     }
 }

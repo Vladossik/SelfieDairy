@@ -21,8 +21,6 @@ public class Repository {
     private ImageSourceDao imageSourceDao;
     private DiaryImageJoinDao diaryImageJoinDao;
     
-    private LiveData<List<Diary>> allDiaries;
-    private LiveData<List<ImageSource>> allImages;
     
     private MyRoomDatabase db;
     
@@ -36,17 +34,22 @@ public class Repository {
         diaryDao = db.diaryDao();
         imageSourceDao = db.imageSourceDao();
         diaryImageJoinDao = db.diaryImageJoinDao();
-        
-        allDiaries = diaryDao.getAllDiaries();
-        allImages = imageSourceDao.getAllImages();
     }
     
     public LiveData<List<Diary>> getAllDiaries() {
-        return allDiaries;
+        return diaryDao.getAllDiaries();
+    }
+    
+    public LiveData<List<Diary>> getAllDoneDiaries() {
+        return diaryDao.getAllDoneDiaries();
+    }
+    
+    public LiveData<List<Diary>> getAllWaitingDiaries() {
+        return diaryDao.getAllWaitingDiaries();
     }
     
     public LiveData<List<ImageSource>> getAllImages() {
-        return allImages;
+        return imageSourceDao.getAllImages();
     }
     
     public MyRoomDatabase getDatabase() {

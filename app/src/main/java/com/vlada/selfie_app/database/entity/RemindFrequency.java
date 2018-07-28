@@ -1,7 +1,7 @@
 package com.vlada.selfie_app.database.entity;
 
 public enum RemindFrequency {
-    Daily(0), Weekly(1), Monthly(2);
+    Never(0), Daily(1), Weekly(2), Monthly(3);
     
     public final int code;
     

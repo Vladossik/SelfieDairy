@@ -18,7 +18,7 @@ public class Diary implements Serializable{
     private String description;
     
     /** reminder notification time*/
-    private Calendar reminder;
+    private Calendar reminder = Calendar.getInstance();
     
     @NonNull
     private Calendar dateOfCreate;

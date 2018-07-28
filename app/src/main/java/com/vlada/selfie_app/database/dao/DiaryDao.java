@@ -26,6 +26,12 @@ public interface DiaryDao {
     @Query("DELETE FROM Diary WHERE id=:id")
     void deleteById(int id);
     
-    @Query("SELECT * from Diary ORDER BY dateOfCreate ASC")
+    @Query("SELECT * from Diary ORDER BY dateOfCreate DESC")
     LiveData<List<Diary>> getAllDiaries();
+    
+    @Query("SELECT * from Diary WHERE isDone ORDER BY dateOfCreate DESC")
+    LiveData<List<Diary>> getAllDoneDiaries();
+    
+    @Query("SELECT * from Diary  WHERE NOT isDone ORDER BY dateOfCreate DESC")
+    LiveData<List<Diary>> getAllWaitingDiaries();
 }

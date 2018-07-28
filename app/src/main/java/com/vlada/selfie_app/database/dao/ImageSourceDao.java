@@ -25,6 +25,6 @@ public interface ImageSourceDao {
     @Query("DELETE FROM ImageSource")
     void deleteAll();
     
-    @Query("SELECT * from ImageSource ORDER BY dateOfCreate ASC")
+    @Query("SELECT * from ImageSource ORDER BY dateOfCreate DESC")
     LiveData<List<ImageSource>> getAllImages();
 }
