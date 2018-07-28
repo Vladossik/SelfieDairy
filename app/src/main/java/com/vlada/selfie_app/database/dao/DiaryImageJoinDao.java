@@ -33,7 +33,12 @@ public interface DiaryImageJoinDao {
     @Query("SELECT * FROM ImageSource INNER JOIN DiaryImageJoin ON " +
             "ImageSource.source=DiaryImageJoin.imageSrc WHERE " +
             "DiaryImageJoin.diaryId=:diaryId")
-    LiveData<List<ImageSource>> getImagesForDiaries(final int diaryId);
+    LiveData<List<ImageSource>> getImagesForDiariesLive(final int diaryId);
+    
+    @Query("SELECT * FROM ImageSource INNER JOIN DiaryImageJoin ON " +
+            "ImageSource.source=DiaryImageJoin.imageSrc WHERE " +
+            "DiaryImageJoin.diaryId=:diaryId")
+    List<ImageSource> getImagesForDiaries(final int diaryId);
     
     
     @Delete

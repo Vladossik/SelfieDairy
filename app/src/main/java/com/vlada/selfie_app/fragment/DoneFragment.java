@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 
 public class DoneFragment extends Fragment {
@@ -18,8 +19,10 @@ public class DoneFragment extends Fragment {
     View root;
     RecyclerView recyclerView;
     
-    public DiaryListAdapter rvAdapter;
-
+    private DiaryListAdapter rvAdapter;
+    
+    private ViewModel viewModel;
+    
     public DoneFragment(){
     }
 
@@ -37,9 +40,18 @@ public class DoneFragment extends Fragment {
     
     
         recyclerView = root.findViewById(R.id.recyclerView);
-        rvAdapter = new DiaryListAdapter(getContext());
+        rvAdapter = new DiaryListAdapter(getContext(), viewModel);
         recyclerView.setAdapter(rvAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        
+        
+    }
     
+    public DiaryListAdapter getRvAdapter() {
+        return rvAdapter;
+    }
+    
+    public void setViewModel(ViewModel viewModel) {
+        this.viewModel = viewModel;
     }
 }

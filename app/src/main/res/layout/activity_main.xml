@@ -3,35 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Design.CoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    style="@style/Widget.Design.CoordinatorLayout">
+    android:orientation="vertical">
 
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_bright"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
 
-        <LinearLayout
-            android:id="@+id/lin"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@android:color/holo_blue_bright"
-                />
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -42,10 +27,10 @@
             android:id="@+id/toolbarCollapse"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:background="@color/colorPrimaryDark">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -65,7 +50,7 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:background="?attr/colorPrimaryDark" />
+            android:background="?attr/colorPrimaryDark"/>
 
     </android.support.design.widget.AppBarLayout>
 

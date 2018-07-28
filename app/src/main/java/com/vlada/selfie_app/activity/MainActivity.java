@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.ViewModel;
+import com.vlada.selfie_app.adapter.DiaryListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.fragment.DoneFragment;
 import com.vlada.selfie_app.R;
@@ -48,6 +49,7 @@ public class MainActivity extends FragmentActivity {
         
         waitingFragment = new WaitingFragment();
         doneFragment = new DoneFragment();
+        
         vpAdapter.addFragment(waitingFragment, "Expect");
         vpAdapter.addFragment(doneFragment, "Done");
         
@@ -71,6 +73,9 @@ public class MainActivity extends FragmentActivity {
         
         viewModel = ViewModelProviders.of(this).get(ViewModel.class);
         
+        // setup viewModel for fragment to put it to rvAdapter
+        doneFragment.setViewModel(viewModel);
+    
         viewModel.getRepo().getAllDiaries().observe(this, new Observer<List<Diary>>() {
             @Override
             public void onChanged(@Nullable List<Diary> diaries) {
@@ -85,7 +90,7 @@ public class MainActivity extends FragmentActivity {
                     }
                     
                     Log.d("my_tag", "updated data received: " + s.toString());
-                    doneFragment.rvAdapter.setDiaries(diaries);
+                    doneFragment.getRvAdapter().setDiaries(diaries);
                 }
             }
         });

@@ -107,17 +107,17 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         
         // retrieve all images in first diary
-        List<ImageSource> imagesInDiary1 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary1.getId()));
+        List<ImageSource> imagesInDiary1 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary1.getId()));
         
         assertEquals(imagesInDiary1.size(), 1);
         
-        List<ImageSource> imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
+        List<ImageSource> imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary2.getId()));
         assertEquals(imagesInDiary2.size(), 0);
         
         // insert in second diary
         diaryImageJoinDao.insert(new DiaryImageJoin(diary2.getId(), image.getSource()));
         
-        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
+        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary2.getId()));
         assertEquals(imagesInDiary2.size(), 1);
         
         
@@ -125,7 +125,7 @@ public class ImageSourceDaoTest extends DatabaseTest {
         diaryImageJoinDao.insert(new DiaryImageJoin(diary2.getId(), image.getSource()));
         
         
-        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary2.getId()));
+        imagesInDiary2 = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary2.getId()));
         assertEquals(imagesInDiary2.size(), 1);
     }
     
@@ -144,19 +144,19 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         
         // retrieve all images in diary
-        List<ImageSource> imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        List<ImageSource> imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary.getId()));
         assertEquals(imagesInDiary.size(), 1);
         
         // delete from diary
         diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
         
-        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary.getId()));
         assertEquals(imagesInDiary.size(), 0);
         
         // delete from diary again
         diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
         
-        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiaries(diary.getId()));
+        imagesInDiary = LiveDataTestUtil.getValue(diaryImageJoinDao.getImagesForDiariesLive(diary.getId()));
         assertEquals(imagesInDiary.size(), 0);
         
     }

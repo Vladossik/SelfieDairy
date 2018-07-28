@@ -2,7 +2,6 @@ package com.vlada.selfie_app.database;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
 import com.vlada.selfie_app.database.dao.DiaryImageJoinDao;
@@ -84,13 +83,21 @@ public class Repository {
     }
     
     /**
-     * In separate thread updates diary from db or creates it
+     * In separate thread deletes diary from db and unbinds all photos from it.
      */
     public void deleteDiary(final Diary diary) {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // unbind all images
+                List<ImageSource> imageSources = diaryImageJoinDao.getImagesForDiaries(diary.getId());
+                for (ImageSource image : imageSources) {
+                    diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
+                }
+                
+                // delete diary
                 diaryDao.deleteById(diary.getId());
+                
             }
         }).start();
     }
