@@ -1,6 +1,5 @@
 package com.vlada.selfie_app.adapter;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -8,6 +7,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,10 +126,46 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     }
     
     
-    public void setDiaries(List<Diary> diary) {
-        diaries = diary;
-        notifyDataSetChanged();
+    public void setDiaries(List<Diary> newDiaries) {
+        if (diaries != null && newDiaries != null) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.diaries, newDiaries));
+            diaries = newDiaries;
+            diffResult.dispatchUpdatesTo(this);
+        } else {
+            diaries = newDiaries;
+            notifyDataSetChanged();
+        }
     }
+    
+    private class MyDiffCallback extends DiffUtil.Callback {
+        List<Diary> oldDiaries;
+        List<Diary> newDiaries;
+    
+        MyDiffCallback(List<Diary> oldDiaries, List<Diary> newDiaries) {
+            this.newDiaries = newDiaries;
+            this.oldDiaries = oldDiaries;
+        }
+        @Override
+        public int getOldListSize() {
+            return oldDiaries.size();
+        }
+    
+        @Override
+        public int getNewListSize() {
+            return newDiaries.size();
+        }
+    
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldDiaries.get(oldItemPosition).getId() == newDiaries.get(newItemPosition).getId();
+        }
+    
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldDiaries.get(oldItemPosition).equals(newDiaries.get(newItemPosition));
+        }
+    }
+    
     
     // getItemCount() is called many times, and when it is first called,
     // diaries has not been updated (means initially, it's null, and we can't return null).

@@ -115,4 +115,16 @@ public class Diary implements Serializable{
     public String toString() {
         return "Diary(name = " + name + ")";
     }
+    
+    
+//    public boolean equalWith(Diary other) {
+//        return id == other.id
+//                && name.equals(other.name)
+//                && description.equals(other.description)
+//                && reminder.equals(other.reminder)
+//                && dateOfCreate.equals(other.dateOfCreate)
+//                && remindFrequency.equals(other.remindFrequency)
+//                && isDone == other.isDone;
+//        
+//    }
 }
