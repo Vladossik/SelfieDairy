@@ -31,7 +31,6 @@ public abstract class MyRoomDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             MyRoomDatabase.class, "database")// name of the database in file system
                             .build();
-                    
                 }
             }
         }

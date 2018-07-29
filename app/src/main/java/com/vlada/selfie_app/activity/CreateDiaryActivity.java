@@ -1,9 +1,10 @@
 package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
-import android.arch.persistence.room.PrimaryKey;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -44,8 +45,8 @@ public class CreateDiaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_diary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Create new diary");
+        toolbar.setTitleTextAppearance(this,R.style.customFontStyle);
         setSupportActionBar(toolbar);
-        
         
         etName = findViewById(R.id.etName);
         etDescription = findViewById(R.id.etDescription);
@@ -60,6 +61,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         spnRemindFrequency.setAdapter(new ArrayAdapter<>(
                 this, android.R.layout.simple_list_item_1, RemindFrequency.values()));
         spnRemindFrequency.setSelection(0);
+        
         
         // check if we have old diary to edit
         

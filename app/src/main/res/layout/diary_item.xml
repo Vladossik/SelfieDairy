@@ -19,7 +19,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:padding="2dp"
-            android:src="@drawable/pictures_folder"/>
+            android:src="@drawable/color_folder"/>
 
         <TextView
             android:id="@+id/title"
@@ -27,16 +27,16 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/imageFolder"
             android:text="Title"
+            android:fontFamily="@font/roboto"
             android:textColor="@color/colorTextDark"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textSize="20sp"/>
 
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/title"
-            android:layout_marginStart="8dp"
+            android:fontFamily="@font/roboto"
             android:layout_toEndOf="@+id/imageFolder"
             android:text="Description"
             android:textSize="15sp"

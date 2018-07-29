@@ -58,7 +58,7 @@ public class Repository {
     
     
     /**
-     * In separate thread inserts diary and updates id in diary object.
+     * In separate thread inserts diary and warning after inserting id still will be zero (mean unset id).
      * If diary with such id already exists - throws an exception.
      */
     public void insertDiary(final Diary diary) {

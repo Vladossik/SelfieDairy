@@ -50,7 +50,8 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:background="?attr/colorPrimaryDark"/>
+            android:background="?attr/colorPrimaryDark"
+            app:tabTextColor="@color/colorAccent"/>
 
     </android.support.design.widget.AppBarLayout>
 

@@ -6,5 +6,7 @@
         android:id="@+id/itemDone"
         android:icon="@drawable/ic_done_black_24dp"
         android:title="Item"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:iconTint="@color/colorAccent"
+        />
 </menu>
