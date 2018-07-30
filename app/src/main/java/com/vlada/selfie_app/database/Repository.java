@@ -4,10 +4,8 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
-import com.vlada.selfie_app.database.dao.DiaryImageJoinDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
-import com.vlada.selfie_app.database.entity.DiaryImageJoin;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.util.List;
@@ -19,8 +17,6 @@ public class Repository {
     
     private DiaryDao diaryDao;
     private ImageSourceDao imageSourceDao;
-    private DiaryImageJoinDao diaryImageJoinDao;
-    
     
     private MyRoomDatabase db;
     
@@ -33,7 +29,6 @@ public class Repository {
         
         diaryDao = db.diaryDao();
         imageSourceDao = db.imageSourceDao();
-        diaryImageJoinDao = db.diaryImageJoinDao();
     }
     
     public LiveData<List<Diary>> getAllDiaries() {
@@ -52,22 +47,25 @@ public class Repository {
         return imageSourceDao.getAllImages();
     }
     
+    public LiveData<List<ImageSource>> getAllImagesForDiary(int diaryId) {
+        return imageSourceDao.getImagesForDiaryLive(diaryId);
+    }
+    
     public MyRoomDatabase getDatabase() {
         return db;
     }
     
     
     /**
-     * In separate thread inserts diary and warning after inserting id still will be zero (mean unset id).
+     * In separate thread inserts diary. Warning: after insertion id still will be unset.
      * If diary with such id already exists - throws an exception.
      */
     public void insertDiary(final Diary diary) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                
                 int newId = (int) diaryDao.insert(diary);
-                diary.setId(newId);
+//                diary.setId(newId);
             }
         }).start();
     }
@@ -92,11 +90,7 @@ public class Repository {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // unbind all images
-                List<ImageSource> imageSources = diaryImageJoinDao.getImagesForDiaries(diary.getId());
-                for (ImageSource image : imageSources) {
-                    diaryImageJoinDao.delete(new DiaryImageJoin(diary.getId(), image.getSource()));
-                }
+                // deletion of all images will happen automatically
                 
                 // delete diary
                 diaryDao.deleteById(diary.getId());
@@ -107,40 +101,38 @@ public class Repository {
     
     
     /**
-     * In separate thread inserts image in db if it does not exist and binds it to the diary by id
+     * In separate thread inserts images in db
      */
-    public void insertImageInDiary(final ImageSource imageSource, final int diaryId) {
+    public void insertImages(final ImageSource... images) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                
                 // if already exists - nothing changes
-                imageSourceDao.insert(imageSource);
-                
-                diaryImageJoinDao.insert(new DiaryImageJoin(diaryId, imageSource.getSource()));
-                
+                imageSourceDao.insert(images);
                 
             }
         }).start();
     }
     
-    /** In separate thread unbinds image from diary and if there are no left diaries for img - deletes img*/
-    public void deleteImageFromDiary(final String imageSrc, final int diaryId) {
+    /** In separate deletes one image by source and diary id.*/
+    public void deleteImageByKeys(final String imageSrc, final int diaryId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                
-                diaryImageJoinDao.delete(new DiaryImageJoin(diaryId, imageSrc));
-                
-                List<Diary> allDiaries = diaryImageJoinDao.getDiariesForImages(imageSrc);
-                
-                if (allDiaries.isEmpty()) {
-                    imageSourceDao.deleteBySrc(imageSrc);
-                }
+                imageSourceDao.deleteByKeys(imageSrc, diaryId);
             }
         }).start();
     }
     
+    /** In separate deletes images.*/
+    public void deleteImages(final ImageSource... images) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                imageSourceDao.delete(images);
+            }
+        }).start();
+    }
     
     
 }
