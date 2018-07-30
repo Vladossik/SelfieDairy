@@ -48,11 +48,11 @@ public class DiaryDaoTest extends DatabaseTest {
         diary1.setDateOfCreate(dateOfCreate);
         
         // reCreate calendar to unbind from previous link
-        diary2.setDateOfCreate(calPlusHour(dateOfCreate, -1));
+        diary2.setDateOfCreate(calPlusHour(dateOfCreate, 1));
         
-        assertTrue("diary1 dateOfCreate in millis should be more then diary2 dateOfCreate in millis",
+        assertTrue("diary1 dateOfCreate in millis should be less then diary2 dateOfCreate in millis",
                 Converters.calendarToMillis(diary1.getDateOfCreate())
-                        > Converters.calendarToMillis(diary2.getDateOfCreate()));
+                        < Converters.calendarToMillis(diary2.getDateOfCreate()));
         
         
         diaryDao.insert(diary1);

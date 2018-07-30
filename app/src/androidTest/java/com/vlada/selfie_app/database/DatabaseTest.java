@@ -5,26 +5,18 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
-import com.vlada.selfie_app.database.dao.DiaryImageJoinDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
-import com.vlada.selfie_app.database.entity.RemindFrequency;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.List;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 
 /**
@@ -38,7 +30,6 @@ public abstract class DatabaseTest {
     
     DiaryDao diaryDao;
     ImageSourceDao imageSourceDao;
-    DiaryImageJoinDao diaryImageJoinDao;
     MyRoomDatabase db;
     
     @Before
@@ -58,7 +49,6 @@ public abstract class DatabaseTest {
         
         diaryDao = db.diaryDao();
         imageSourceDao = db.imageSourceDao();
-        diaryImageJoinDao = db.diaryImageJoinDao();
     }
     
     @After

@@ -1,43 +1,52 @@
 package com.vlada.selfie_app.database.entity;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import java.util.Calendar;
 
-@Entity
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity(primaryKeys = {"source", "diaryId"},
+        foreignKeys = @ForeignKey(
+                entity = Diary.class,
+                parentColumns = "id",
+                childColumns = "diaryId",
+                onDelete = CASCADE
+        ))
 public class ImageSource {
-    
-//    @PrimaryKey(autoGenerate = true)
-//    private int id;
-    
-    /** Path to image*/
+    /**
+     * Path to image
+     */
     @NonNull
-    @PrimaryKey
     private String source;
     
-    /** Date of image creation*/
+    
+    /** Id of bound diary. Should be const*/
+    private int diaryId;
+    
+    /**
+     * Date of image creation.
+     */
     @NonNull
     private Calendar dateOfCreate;
     
     private String description;
     
-    
-    private ImageSource() {
+    /** Primary constructor*/
+    public ImageSource(@NonNull String source, int diaryId) {
+        this.diaryId = diaryId;
+        this.source = source;
         dateOfCreate = Calendar.getInstance();
     }
     
-    public ImageSource(@NonNull String source) {
-        this();
-        this.source = source;
-    }
-    
     @Ignore
-    public ImageSource(@NonNull String source, String description) {
+    public ImageSource(@NonNull String source, int diaryId, String description) {
         // setup dateOfCreate in this()
-        this();
+        this(source, diaryId);
         this.source = source;
         this.description = description;
     }
@@ -45,10 +54,6 @@ public class ImageSource {
     @NonNull
     public String getSource() {
         return source;
-    }
-    
-    public void setSource(@NonNull String source) {
-        this.source = source;
     }
     
     @NonNull
@@ -66,5 +71,9 @@ public class ImageSource {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public int getDiaryId() {
+        return diaryId;
     }
 }
