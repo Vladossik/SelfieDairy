@@ -41,6 +41,8 @@
             android:inputType="textMultiLine"
             android:lines="3"
             android:fontFamily="@font/roboto"
+            android:maxLines="5"
+            android:scrollbars="vertical"
             />
 
         <TextView

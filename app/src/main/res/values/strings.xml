@@ -10,4 +10,5 @@
     <string name="done">Done</string>
     <string name="waiting">Waiting</string>
     <string name="title_activity_create_event">CreateEventActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>
