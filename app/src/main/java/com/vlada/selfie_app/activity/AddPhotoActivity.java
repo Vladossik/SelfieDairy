@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
@@ -46,6 +48,7 @@ public class AddPhotoActivity extends AppCompatActivity {
      * ImageSource for creating new photo.
      */
     ImageSource imageSource;
+    Calendar dateOfCreate = Calendar.getInstance();
     
     private Diary diary;
     
@@ -68,9 +71,11 @@ public class AddPhotoActivity extends AppCompatActivity {
         etPhotoDescription = findViewById(R.id.etPhotoDescription);
         ivNewPhoto = findViewById(R.id.ivNewPhoto);
         tvDateOfCreate = findViewById(R.id.tvDateOfCreate);
+    
+        tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
+                .format(dateOfCreate.getTime()));
         
-        // sets No Date until we don't have an image.
-        updateDateOfCreateText();
+        
         
         ivNewPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,15 +94,19 @@ public class AddPhotoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dlg, int position) {
                         switch (position) {
                             case 0:
-                                Toast.makeText(AddPhotoActivity.this, "Selected camera", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                 
-                                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(takePicture, CAMERA_REQUEST_CODE);//zero can be replaced with any action code
+//                                File folder = new File(Environment.getExternalStorageDirectory()
+//                                        .getAbsolutePath() + "/SelfieDiary");
+//                                folder.mkdir();
+//                                Uri imageUri = Uri.fromFile(new File(folder,"selfie_" +
+//                                        String.valueOf(System.currentTimeMillis()) + ".jpg"));
+//                                intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
+//                                
+                                startActivityForResult(intent, CAMERA_REQUEST_CODE);//zero can be replaced with any action code
                                 
                                 break;
                             case 1:
-                                Toast.makeText(AddPhotoActivity.this, "Selected Gallery", Toast.LENGTH_SHORT).show();
-                                
                                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                                 startActivityForResult(pickPhoto, GALLERY_REQUEST_CODE);//one can be replaced with any action code
@@ -157,13 +166,16 @@ public class AddPhotoActivity extends AppCompatActivity {
                 Log.d("my_tag", "received image Uri from picker: " + imageUri);
                 
                 imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
+    
+                Picasso.get()
+                        .load(new File(imageSource.getSource()))
+                        .resize(800, 800)
+                        .onlyScaleDown()
+                        .centerInside()
+                        .into(ivNewPhoto);
                 
-                Bitmap bitmap = BitmapFactory.decodeFile(imageSource.getSource());
-                ivNewPhoto.setImageBitmap(bitmap);
-
-//                ivNewPhoto.setImageURI(Uri.fromFile(new File(imageSource.getSource())));
-                
-                updateDateOfCreateText();
+                imageSource.setDateOfCreate(dateOfCreate);
+//                updateDateOfCreateText();
             }
         }
     }
@@ -180,17 +192,5 @@ public class AddPhotoActivity extends AppCompatActivity {
             cursor.close();
         }
         return result;
-    }
-    
-    /**
-     * Updates tvDateOfCreate text from imageSource
-     */
-    private void updateDateOfCreateText() {
-        if (imageSource != null) {
-            tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
-                    .format(imageSource.getDateOfCreate().getTime()));
-        } else {
-            tvDateOfCreate.setText("No date of create");
-        }
     }
 }

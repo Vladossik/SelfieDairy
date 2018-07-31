@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.DiaryActivity;
@@ -71,18 +72,21 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
         if (images != null) {
-            ImageSource current = images.get(position);
+            ImageSource imageSource = images.get(position);
             
             holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
-                    .format(current.getDateOfCreate().getTime()));
-            Log.d("my_tag", "onBindViewHolder: received path: " + current.getSource());
+                    .format(imageSource.getDateOfCreate().getTime()));
+            Log.d("my_tag", "onBindViewHolder: received path: " + imageSource.getSource());
             
-            // create bitmap
+            // loading image in imageView from path
+            Picasso.get()
+                    .load(new File(imageSource.getSource()))
+                    .resize(800, 800)
+                    .onlyScaleDown()
+                    .centerInside()
+                    .into(holder.imageView);
             
-//            Bitmap bitmap = BitmapFactory.decodeFile(current.getSource());
-            holder.imageView.setImageBitmap(getBitmap(current.getSource()));
-            
-            holder.description.setText(current.getDescription());
+            holder.description.setText(imageSource.getDescription());
         } else {
             // Covers the case of data not being ready yet.
             holder.description.setText("No description");
@@ -108,101 +112,6 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         });
     }
     
-    
-    private Bitmap getBitmap(String path) {
-        String TAG = "my_tag";
-        Uri uri = Uri.fromFile(new File(path));
-        InputStream in = null;
-        try {
-            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
-            in = activity.getContentResolver().openInputStream(uri);
-    
-            // Decode image size
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(in, null, options);
-            in.close();
-    
-    
-            int scale = 1;
-            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
-                    IMAGE_MAX_SIZE) {
-                scale++;
-            }
-            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth
-                    + ", orig-height: " + options.outHeight);
-    
-            Bitmap resultBitmap = null;
-            in = activity.getContentResolver().openInputStream(uri);
-            if (scale > 1) {
-                scale--;
-                // scale to max possible inSampleSize that still yields an image
-                // larger than target
-                options = new BitmapFactory.Options();
-                options.inSampleSize = scale;
-                resultBitmap = BitmapFactory.decodeStream(in, null, options);
-    
-                // resize to desired dimensions
-                int height = resultBitmap.getHeight();
-                int width = resultBitmap.getWidth();
-                Log.d(TAG, "1th scale operation dimenions - width: " + width
-                        + ", height: " + height);
-    
-                double y = Math.sqrt(IMAGE_MAX_SIZE
-                        / (((double) width) / height));
-                double x = (y / height) * width;
-    
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, (int) x,
-                        (int) y, true);
-                resultBitmap.recycle();
-                resultBitmap = scaledBitmap;
-    
-                System.gc();
-            } else {
-                resultBitmap = BitmapFactory.decodeStream(in);
-            }
-            in.close();
-    
-            Log.d(TAG, "bitmap size - width: " + resultBitmap.getWidth() + ", height: " +
-                    resultBitmap.getHeight());
-            return resultBitmap;
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
-            return null;
-        }
-    }
-//    public void showDiarySetupDialog(final Context context, final Diary diary) {
-//        
-//        final String doneOrWaiting = diary.isDone() ? "Expected" : "Done";
-//        
-//        new AlertDialog.Builder(context)
-//                .setTitle("Setup " + diary.getName())
-//                .setNegativeButton("Cancel", null)
-//                .setItems(new String[]{"Edit", "Set " + doneOrWaiting, "Remove"}, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dlg, int position) {
-//                        switch (position) {
-//                            case 0:
-//                                Toast.makeText(context, "Edition", Toast.LENGTH_SHORT).show();
-//                                activity.openActivityForEditing(diary);
-//                                break;
-//                            case 1:
-//                                Toast.makeText(context, "Setting diary as " + doneOrWaiting, Toast.LENGTH_SHORT).show();
-//                                diary.setDone(!diary.isDone());
-//                                
-//                                viewModel.getRepo().updateDiary(diary);
-//                                break;
-//                            case 2:
-//                                Toast.makeText(context, "Removing diary", Toast.LENGTH_SHORT).show();
-//                                viewModel.getRepo().deleteDiary(diary);
-//                                break;
-//                        }
-//                        
-//                    }
-//                })
-//                .create()
-//                .show();
-//    }
     
     /** Updates images in rv, using diffUtil*/
     public void setImages(List<ImageSource> newImages) {
