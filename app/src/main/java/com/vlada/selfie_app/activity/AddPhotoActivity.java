@@ -1,9 +1,16 @@
 package com.vlada.selfie_app.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +29,7 @@ import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -29,15 +37,15 @@ public class AddPhotoActivity extends AppCompatActivity {
     
     public static final int CAMERA_REQUEST_CODE = 0;
     public static final int GALLERY_REQUEST_CODE = 1;
-    private EditText etPhotoDescription;
-    private TextView tvDateOfCreate;
-    private ImageView ivNewPhoto;
+    EditText etPhotoDescription;
+    TextView tvDateOfCreate;
+    ImageView ivNewPhoto;
     
     
     /**
      * ImageSource for creating new photo.
      */
-    private ImageSource imageSource;
+    ImageSource imageSource;
     
     private Diary diary;
     
@@ -76,7 +84,6 @@ public class AddPhotoActivity extends AppCompatActivity {
     private void showChooseImageDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Where to choose image?")
-                .setNegativeButton("Cancel", null)
                 .setItems(new String[]{"Camera", "Gallery"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dlg, int position) {
@@ -146,16 +153,38 @@ public class AddPhotoActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
                 Uri imageUri = data.getData();
-                ivNewPhoto.setImageURI(imageUri);
+//                ivNewPhoto.setImageURI(imageUri);
                 Log.d("my_tag", "received image Uri from picker: " + imageUri);
-    
-                imageSource = new ImageSource(imageUri.toString(), diary.getId());
+                
+                imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
+                
+                Bitmap bitmap = BitmapFactory.decodeFile(imageSource.getSource());
+                ivNewPhoto.setImageBitmap(bitmap);
+
+//                ivNewPhoto.setImageURI(Uri.fromFile(new File(imageSource.getSource())));
                 
                 updateDateOfCreateText();
             }
         }
     }
     
+    private String getRealPathFromURI(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
+    }
+    
+    /**
+     * Updates tvDateOfCreate text from imageSource
+     */
     private void updateDateOfCreateText() {
         if (imageSource != null) {
             tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.vlada.selfie_app.R;
@@ -85,7 +84,7 @@ public class DiaryActivity extends AppCompatActivity {
         if (requestCode == ADD_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ImageSource imageSource = (ImageSource) data.getSerializableExtra("imageSource");
-                viewModel.getRepo().insertImages(imageSource);
+                viewModel.getRepo().insertImage(imageSource);
             }
         }
     }

@@ -91,7 +91,7 @@ public class RepositoryTest {
         d3 = allDiaries.get(2);
         
         
-        repo.insertImages(
+        repo.insertImage(
                 new ImageSource("src1", d1.getId()),
                 new ImageSource("src2", d1.getId()),
                 new ImageSource("src1", d2.getId()),

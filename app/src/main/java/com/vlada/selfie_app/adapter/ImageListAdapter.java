@@ -1,6 +1,11 @@
 package com.vlada.selfie_app.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +19,15 @@ import android.widget.TextView;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.DiaryActivity;
-import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import static android.content.Context.VIBRATOR_SERVICE;
 
 public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ImageViewHolder> {
     
@@ -66,8 +75,12 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
             
             holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(current.getDateOfCreate().getTime()));
-            Log.d("my_tag", "onBindViewHolder: attached image by Uri: " + current.getSource());
-            holder.imageView.setImageURI(Uri.parse(current.getSource()));
+            Log.d("my_tag", "onBindViewHolder: received path: " + current.getSource());
+            
+            // create bitmap
+            
+//            Bitmap bitmap = BitmapFactory.decodeFile(current.getSource());
+            holder.imageView.setImageBitmap(getBitmap(current.getSource()));
             
             holder.description.setText(current.getDescription());
         } else {
@@ -75,26 +88,89 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
             holder.description.setText("No description");
         }
         
-//        holder.root.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                if (images != null) {
-//                    // Vibrate for 100 milliseconds
-//                    if (Build.VERSION.SDK_INT >= 26) {
-//                        ((Vibrator) activity.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-//                    } else {
-//                        ((Vibrator) activity.getSystemService(VIBRATOR_SERVICE)).vibrate(100);
-//                    }
-//                    
-//                    showDiarySetupDialog(v.getContext(), images.get(position));
-//                }
-//                
-//                return true;
-//            }
-//        });
-        
+        holder.root.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (images != null) {
+                    // Vibrate for 100 milliseconds
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        ((Vibrator) activity.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        ((Vibrator) activity.getSystemService(VIBRATOR_SERVICE)).vibrate(100);
+                    }
+                    
+                    // just delete image from path
+                    viewModel.getRepo().deleteImage(images.get(position));
+                }
+
+                return true;
+            }
+        });
     }
     
+    
+    private Bitmap getBitmap(String path) {
+        String TAG = "my_tag";
+        Uri uri = Uri.fromFile(new File(path));
+        InputStream in = null;
+        try {
+            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+            in = activity.getContentResolver().openInputStream(uri);
+    
+            // Decode image size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, options);
+            in.close();
+    
+    
+            int scale = 1;
+            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
+                    IMAGE_MAX_SIZE) {
+                scale++;
+            }
+            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth
+                    + ", orig-height: " + options.outHeight);
+    
+            Bitmap resultBitmap = null;
+            in = activity.getContentResolver().openInputStream(uri);
+            if (scale > 1) {
+                scale--;
+                // scale to max possible inSampleSize that still yields an image
+                // larger than target
+                options = new BitmapFactory.Options();
+                options.inSampleSize = scale;
+                resultBitmap = BitmapFactory.decodeStream(in, null, options);
+    
+                // resize to desired dimensions
+                int height = resultBitmap.getHeight();
+                int width = resultBitmap.getWidth();
+                Log.d(TAG, "1th scale operation dimenions - width: " + width
+                        + ", height: " + height);
+    
+                double y = Math.sqrt(IMAGE_MAX_SIZE
+                        / (((double) width) / height));
+                double x = (y / height) * width;
+    
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, (int) x,
+                        (int) y, true);
+                resultBitmap.recycle();
+                resultBitmap = scaledBitmap;
+    
+                System.gc();
+            } else {
+                resultBitmap = BitmapFactory.decodeStream(in);
+            }
+            in.close();
+    
+            Log.d(TAG, "bitmap size - width: " + resultBitmap.getWidth() + ", height: " +
+                    resultBitmap.getHeight());
+            return resultBitmap;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+            return null;
+        }
+    }
 //    public void showDiarySetupDialog(final Context context, final Diary diary) {
 //        
 //        final String doneOrWaiting = diary.isDone() ? "Expected" : "Done";

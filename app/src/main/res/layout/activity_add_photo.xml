@@ -16,56 +16,62 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/colorAccent"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/ivNewPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:maxHeight="200dp"
-            android:src="@mipmap/ic_launcher"/>
-
-        <TextView
-            android:id="@+id/tvDateOfCreate"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto"
-            android:gravity="end"
-            android:text="@{dateOfCreate}"/>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#7b7b7b"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"/>
+            <ImageView
+                android:id="@+id/ivNewPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:src="@mipmap/ic_launcher"/>
 
-        <EditText
-            android:id="@+id/etPhotoDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="About Selfie"
-            android:inputType="textMultiLine"
-            android:fontFamily="@font/roboto"
-            android:maxLines="15"
-            android:scrollbars="vertical"/>
+            <TextView
+                android:id="@+id/tvDateOfCreate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:gravity="end"
+                android:text="@{dateOfCreate}"/>
 
-        <Button
-            android:id="@+id/btnSavePhoto"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/colorText"
-            android:fontFamily="@font/roboto"
-            android:gravity="center"
-            android:onClick="btnSavePhotoClick"
-            android:text="@string/buttonSave"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:background="#7b7b7b"/>
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/etPhotoDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:fontFamily="@font/roboto"
+                android:hint="About Selfie"
+                android:inputType="textMultiLine"
+                android:maxLines="15"
+                android:scrollbars="vertical"/>
+
+            <Button
+                android:id="@+id/btnSavePhoto"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/colorText"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                android:onClick="btnSavePhotoClick"
+                android:text="@string/buttonSave"/>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

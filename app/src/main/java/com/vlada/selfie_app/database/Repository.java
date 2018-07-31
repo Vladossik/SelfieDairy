@@ -103,7 +103,7 @@ public class Repository {
     /**
      * In separate thread inserts images in db
      */
-    public void insertImages(final ImageSource... images) {
+    public void insertImage(final ImageSource... images) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -125,7 +125,7 @@ public class Repository {
     }
     
     /** In separate deletes images.*/
-    public void deleteImages(final ImageSource... images) {
+    public void deleteImage(final ImageSource... images) {
         new Thread(new Runnable() {
             @Override
             public void run() {
