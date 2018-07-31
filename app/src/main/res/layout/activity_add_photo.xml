@@ -23,19 +23,19 @@
         android:padding="16dp">
 
         <ImageView
-            android:id="@+id/newPhoto"
+            android:id="@+id/ivNewPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:maxHeight="200dp"
+            android:src="@mipmap/ic_launcher"/>
+
+        <TextView
+            android:id="@+id/tvDateOfCreate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/add_photo"
-        />
-
-       <TextView
-           android:id="@+id/dateOfCreate"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:text="@{dateOfCreate}"
-           android:gravity="end"
-           android:fontFamily="@font/roboto" />
+            android:fontFamily="@font/roboto"
+            android:gravity="end"
+            android:text="@{dateOfCreate}"/>
 
         <View
             android:layout_width="match_parent"
@@ -45,7 +45,7 @@
             android:layout_marginRight="3dp"/>
 
         <EditText
-            android:id="@+id/photoDescription"
+            android:id="@+id/etPhotoDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -56,14 +56,15 @@
             android:scrollbars="vertical"/>
 
         <Button
-            android:id="@+id/savePhoto"
+            android:id="@+id/btnSavePhoto"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/buttonSave"
-            android:background="@color/colorText"
             android:layout_gravity="center"
-            android:fontFamily="@font/roboto"/>
+            android:background="@color/colorText"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:onClick="btnSavePhotoClick"
+            android:text="@string/buttonSave"/>
 
     </LinearLayout>
 

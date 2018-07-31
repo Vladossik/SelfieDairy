@@ -2,6 +2,7 @@ package com.vlada.selfie_app.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
+import com.vlada.selfie_app.activity.DiaryActivity;
 import com.vlada.selfie_app.activity.MainActivity;
 import com.vlada.selfie_app.database.entity.Diary;
 
@@ -90,6 +92,15 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
             }
         });
         
+        holder.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (diaries != null) {
+                    activity.openDiaryActivity(diaries.get(position));
+                }
+            }
+        });
+        
     }
     
     public void showDiarySetupDialog(final Context context, final Diary diary) {
@@ -125,7 +136,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                 .show();
     }
     
-    
+    /** Updates diaries in rv, using diffUtil*/
     public void setDiaries(List<Diary> newDiaries) {
         if (diaries != null && newDiaries != null) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.diaries, newDiaries));

@@ -58,9 +58,7 @@ public class MainActivity extends FragmentActivity {
         tabLayout.setupWithViewPager(viewPager);
         
         // fab setup
-        
         fab = findViewById(R.id.fab);
-        
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +68,6 @@ public class MainActivity extends FragmentActivity {
         });
         
         // setup database in viewModel
-        
         viewModel = ViewModelProviders.of(this).get(ViewModel.class);
         
         // connect viewModel with diaryListAdapter in fragments
@@ -136,5 +133,11 @@ public class MainActivity extends FragmentActivity {
         intent.putExtra("oldDiary", diary);
         
         startActivityForResult(intent, EDIT_DIARY_REQUEST);
+    }
+    
+    public void openDiaryActivity(Diary diary) {
+        Intent intent = new Intent(this, DiaryActivity.class);
+        intent.putExtra("diary", diary);
+        startActivity(intent);
     }
 }

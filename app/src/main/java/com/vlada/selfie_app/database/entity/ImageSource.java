@@ -6,6 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
@@ -17,7 +18,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                 childColumns = "diaryId",
                 onDelete = CASCADE
         ))
-public class ImageSource {
+public class ImageSource implements Serializable {
     /**
      * Path to image
      */
