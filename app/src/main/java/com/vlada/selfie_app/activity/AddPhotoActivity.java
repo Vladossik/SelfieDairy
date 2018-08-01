@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,6 +52,10 @@ public class AddPhotoActivity extends AppCompatActivity {
     Calendar dateOfCreate = Calendar.getInstance();
     
     private Diary diary;
+    
+    
+    /** Pointer to last saved file from camera.*/
+    private File lastSavedCameraImage;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,22 +99,30 @@ public class AddPhotoActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dlg, int position) {
                         switch (position) {
                             case 0:
-                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                // intent for creating image from camera
+                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                 
-//                                File folder = new File(Environment.getExternalStorageDirectory()
-//                                        .getAbsolutePath() + "/SelfieDiary");
-//                                folder.mkdir();
-//                                Uri imageUri = Uri.fromFile(new File(folder,"selfie_" +
-//                                        String.valueOf(System.currentTimeMillis()) + ".jpg"));
-//                                intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
-//                                
-                                startActivityForResult(intent, CAMERA_REQUEST_CODE);//zero can be replaced with any action code
+                                // setup folder and file where to save new photo
+                                
+                                File folder = new File(Environment.getExternalStorageDirectory()
+                                        .getAbsolutePath() + "/SelfieDiary");
+    
+                                lastSavedCameraImage = new File(folder,"selfie_" +
+                                        String.valueOf(System.currentTimeMillis()) + ".jpg");
+    
+    
+                                Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
+                                        "com.vlada.selfie_app.fileprovider",
+                                        lastSavedCameraImage);
+    
+                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
                                 break;
                             case 1:
-                                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(pickPhoto, GALLERY_REQUEST_CODE);//one can be replaced with any action code
+                                startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
                                 
                                 break;
                         }
@@ -161,7 +174,20 @@ public class AddPhotoActivity extends AppCompatActivity {
         
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
-                Uri imageUri = data.getData();
+                
+                Uri imageUri;
+                if (requestCode == CAMERA_REQUEST_CODE) {
+                    
+                    if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
+                        imageUri = Uri.fromFile(lastSavedCameraImage);
+                    } else {
+                        Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                } else {
+                    imageUri = data.getData();
+                }
 //                ivNewPhoto.setImageURI(imageUri);
                 Log.d("my_tag", "received image Uri from picker: " + imageUri);
                 
