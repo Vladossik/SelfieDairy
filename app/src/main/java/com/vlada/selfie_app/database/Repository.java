@@ -134,5 +134,13 @@ public class Repository {
         }).start();
     }
     
-    
+    /** In separate thread updates image.*/
+    public void updateImage(final ImageSource imageSource) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                imageSourceDao.update(imageSource);
+            }
+        }).start();
+    }
 }

@@ -23,6 +23,7 @@ import java.util.List;
 public class DiaryActivity extends AppCompatActivity {
     
     public static final int ADD_PHOTO_REQUEST = 1;
+    public static final int EDIT_PHOTO_REQUEST = 2;
     RecyclerView rvImageList;
     
     private ImageListAdapter imageListAdapter;
@@ -34,8 +35,6 @@ public class DiaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
-        
-        
         
         // get diary from previous activity
         diary = (Diary) getIntent().getSerializableExtra("diary");
@@ -71,9 +70,19 @@ public class DiaryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(DiaryActivity.this, AddPhotoActivity.class);
                 intent.putExtra("diary", diary);
+                intent.putExtra("editing", false);
+                
                 startActivityForResult(intent, ADD_PHOTO_REQUEST);
             }
         });
+    }
+    
+    public void openActivityToEditImage(ImageSource image) {
+        Intent intent = new Intent(this, AddPhotoActivity.class);
+        intent.putExtra("diary", diary);
+        intent.putExtra("editing", true);
+        intent.putExtra("oldImage", image);
+        startActivityForResult(intent, EDIT_PHOTO_REQUEST);
     }
     
     
@@ -81,10 +90,15 @@ public class DiaryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     
-        if (requestCode == ADD_PHOTO_REQUEST) {
+        if (requestCode == ADD_PHOTO_REQUEST || requestCode == EDIT_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ImageSource imageSource = (ImageSource) data.getSerializableExtra("imageSource");
-                viewModel.getRepo().insertImage(imageSource);
+                
+                if (requestCode == EDIT_PHOTO_REQUEST) {
+                    viewModel.getRepo().updateImage(imageSource);
+                } else {
+                    viewModel.getRepo().insertImage(imageSource);
+                }
             }
         }
     }

@@ -44,17 +44,21 @@ public class AddPhotoActivity extends AppCompatActivity {
     TextView tvDateOfCreate;
     ImageView ivNewPhoto;
     
-    
     /**
-     * ImageSource for creating new photo.
+     * True if we are editing old image
+     */
+    Boolean editing = false;
+    /**
+     * ImageSource for creating new photo or editing.
      */
     ImageSource imageSource;
-    Calendar dateOfCreate = Calendar.getInstance();
     
     private Diary diary;
     
     
-    /** Pointer to last saved file from camera.*/
+    /**
+     * Pointer to last saved file from camera.
+     */
     private File lastSavedCameraImage;
     
     @Override
@@ -76,15 +80,40 @@ public class AddPhotoActivity extends AppCompatActivity {
         etPhotoDescription = findViewById(R.id.etPhotoDescription);
         ivNewPhoto = findViewById(R.id.ivNewPhoto);
         tvDateOfCreate = findViewById(R.id.tvDateOfCreate);
-    
-        tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
-                .format(dateOfCreate.getTime()));
         
+        
+        if (getIntent().getBooleanExtra("editing", false)) {
+            // editing existing imageSource
+            editing = true;
+            toolbar.setTitle("Edit photo");
+            
+            imageSource = (ImageSource) getIntent().getSerializableExtra("oldImage");
+            
+            tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
+                    .format(imageSource.getDateOfCreate().getTime()));
+            
+            fillImageView(imageSource.getSource());
+            etPhotoDescription.setText(imageSource.getDescription());
+            
+        } else {
+            // creating new imageSource
+            editing = false;
+            toolbar.setTitle("Add new photo");
+            
+            tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
+                    .format(Calendar.getInstance().getTime()));
+            
+        }
         
         
         ivNewPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (editing) {
+                    Toast.makeText(AddPhotoActivity.this,
+                            "Can not select new image in edit mode.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 showChooseImageDialog();
             }
         });
@@ -106,15 +135,15 @@ public class AddPhotoActivity extends AppCompatActivity {
                                 
                                 File folder = new File(Environment.getExternalStorageDirectory()
                                         .getAbsolutePath() + "/SelfieDiary");
-    
-                                lastSavedCameraImage = new File(folder,"selfie_" +
+                                
+                                lastSavedCameraImage = new File(folder, "selfie_" +
                                         String.valueOf(System.currentTimeMillis()) + ".jpg");
-    
-    
+                                
+                                
                                 Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
                                         "com.vlada.selfie_app.fileprovider",
                                         lastSavedCameraImage);
-    
+                                
                                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
@@ -192,18 +221,21 @@ public class AddPhotoActivity extends AppCompatActivity {
                 Log.d("my_tag", "received image Uri from picker: " + imageUri);
                 
                 imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
-    
-                Picasso.get()
-                        .load(new File(imageSource.getSource()))
-                        .resize(800, 800)
-                        .onlyScaleDown()
-                        .centerInside()
-                        .into(ivNewPhoto);
                 
-                imageSource.setDateOfCreate(dateOfCreate);
-//                updateDateOfCreateText();
+                fillImageView(imageSource.getSource());
+                
+                imageSource.setDateOfCreate(Calendar.getInstance());
             }
         }
+    }
+    
+    private void fillImageView(String imagePath) {
+        Picasso.get()
+                .load(new File(imagePath))
+                .resize(800, 800)
+                .onlyScaleDown()
+                .centerInside()
+                .into(ivNewPhoto);
     }
     
     private String getRealPathFromURI(Uri contentURI) {

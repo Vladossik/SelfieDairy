@@ -106,14 +106,24 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                     // just delete image from path
                     viewModel.getRepo().deleteImage(images.get(position));
                 }
-
+                
                 return true;
+            }
+        });
+        
+        
+        holder.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.openActivityToEditImage(images.get(position));
             }
         });
     }
     
     
-    /** Updates images in rv, using diffUtil*/
+    /**
+     * Updates images in rv, using diffUtil
+     */
     public void setImages(List<ImageSource> newImages) {
         if (images != null && newImages != null) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.images, newImages));
@@ -128,26 +138,27 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
     private class MyDiffCallback extends DiffUtil.Callback {
         List<ImageSource> oldImages;
         List<ImageSource> newImages;
-    
+        
         MyDiffCallback(List<ImageSource> oldImages, List<ImageSource> newImages) {
             this.newImages = newImages;
             this.oldImages = oldImages;
         }
+        
         @Override
         public int getOldListSize() {
             return oldImages.size();
         }
-    
+        
         @Override
         public int getNewListSize() {
             return newImages.size();
         }
-    
+        
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             return oldImages.get(oldItemPosition).getSource().equals(newImages.get(newItemPosition).getSource());
         }
-    
+        
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             return oldImages.get(oldItemPosition).equals(newImages.get(newItemPosition));
