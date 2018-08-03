@@ -1,23 +1,17 @@
 package com.vlada.selfie_app.activity;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -132,21 +126,21 @@ public class AddPhotoActivity extends AppCompatActivity {
                             case 0:
                                 // intent for creating image from camera
                                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+                                
                                 // setup folder and file where to save new photo
-
+                                
                                 File folder = new File(Environment.getExternalStorageDirectory()
                                         .getAbsolutePath() + "/SelfieDiary");
-
+                                
                                 lastSavedCameraImage = new File(folder, "selfie_" +
                                         String.valueOf(System.currentTimeMillis()) + ".jpg");
                                 
                                 folder.mkdirs();
-
+                                
                                 Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
                                         "com.vlada.selfie_app.fileprovider",
                                         lastSavedCameraImage);
-
+                                
                                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
