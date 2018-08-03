@@ -2,7 +2,9 @@ package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +47,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_diary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Create new diary");
-        toolbar.setTitleTextAppearance(this,R.style.customFontStyle);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
         
         etName = findViewById(R.id.etName);
@@ -95,6 +97,11 @@ public class CreateDiaryActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_diary_menu, menu);
+        
+        // change color for icon 0
+        Drawable myIcon = menu.getItem(0).getIcon();
+        myIcon.mutate();
+        myIcon.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         return true;
     }
     

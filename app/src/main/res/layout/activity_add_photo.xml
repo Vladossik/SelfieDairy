@@ -14,7 +14,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimaryDark"
         app:popupTheme="@style/AppTheme.PopupOverlay"
-        app:titleTextColor="@color/colorAccent"/>
+        app:titleTextColor="@color/colorAccent"
+        android:fontFamily="@font/roboto"/>
 
     <ScrollView
         android:layout_width="match_parent"

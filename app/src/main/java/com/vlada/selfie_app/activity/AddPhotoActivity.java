@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -73,7 +75,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         // setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Add new photo");
-        toolbar.setTitleTextAppearance(this, R.style.customFontStyle);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
         
         // init views
@@ -130,20 +132,20 @@ public class AddPhotoActivity extends AppCompatActivity {
                             case 0:
                                 // intent for creating image from camera
                                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                
+
                                 // setup folder and file where to save new photo
-                                
+
                                 File folder = new File(Environment.getExternalStorageDirectory()
                                         .getAbsolutePath() + "/SelfieDiary");
-                                
+
                                 lastSavedCameraImage = new File(folder, "selfie_" +
                                         String.valueOf(System.currentTimeMillis()) + ".jpg");
-                                
-                                
+
+
                                 Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
                                         "com.vlada.selfie_app.fileprovider",
                                         lastSavedCameraImage);
-                                
+
                                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
@@ -165,6 +167,11 @@ public class AddPhotoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.create_diary_menu, menu);
+        
+        // change color for icon 0
+        Drawable myIcon = menu.getItem(0).getIcon();
+        myIcon.mutate();
+        myIcon.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         return true;
     }
     

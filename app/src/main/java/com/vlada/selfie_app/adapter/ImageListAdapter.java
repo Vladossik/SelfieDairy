@@ -1,8 +1,5 @@
 package com.vlada.selfie_app.adapter;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -23,8 +20,6 @@ import com.vlada.selfie_app.activity.DiaryActivity;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
