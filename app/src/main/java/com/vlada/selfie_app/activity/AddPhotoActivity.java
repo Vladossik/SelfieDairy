@@ -29,6 +29,7 @@ import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -128,9 +129,17 @@ public class AddPhotoActivity extends AppCompatActivity {
                                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                 
                                 // setup folder and file where to save new photo
-                                
+
+                                // storage/emulated/0/SelfieDiary
                                 File folder = new File(Environment.getExternalStorageDirectory()
                                         .getAbsolutePath() + "/SelfieDiary");
+                                
+                                // storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/
+//                                File folder = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                                
+                                // storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/SelfieDiary
+//                                File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//                                folder = new File(folder, "SelfieDiary");
                                 
                                 lastSavedCameraImage = new File(folder, "selfie_" +
                                         String.valueOf(System.currentTimeMillis()) + ".jpg");
@@ -147,7 +156,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                                 break;
                             case 1:
                                 Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                                 startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
                                 
                                 break;
@@ -194,15 +203,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     }
     
     
-    public void btnSavePhotoClick(View v) {
-        saveImage();
-    }
-    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
-        
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
                 
@@ -211,6 +214,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                     
                     if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
                         imageUri = Uri.fromFile(lastSavedCameraImage);
+                        galleryAddPic(lastSavedCameraImage);
                     } else {
                         Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
                         return;
@@ -229,6 +233,23 @@ public class AddPhotoActivity extends AppCompatActivity {
                 imageSource.setDateOfCreate(Calendar.getInstance());
             }
         }
+    }
+    
+    private void galleryAddPic(File imageFile) {
+         // directly insert in android image database
+//        try {
+//            MediaStore.Images.Media.insertImage(getContentResolver(),
+//                    imageFile.getAbsolutePath(), imageFile.getName(), null);
+//        } catch (FileNotFoundException e) {
+//            Log.d("my_tag", "galleryAddPic: error: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+    
+        // sending broadcast to scan new images.
+        sendBroadcast(new Intent(
+                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
+        
+        
     }
     
     private void fillImageView(String imagePath) {
