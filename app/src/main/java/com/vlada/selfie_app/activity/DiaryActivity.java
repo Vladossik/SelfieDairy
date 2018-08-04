@@ -40,8 +40,8 @@ public class DiaryActivity extends AppCompatActivity {
         diary = (Diary) getIntent().getSerializableExtra("diary");
     
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Diary: " + diary.getName());
-        
+        toolbar.setTitle(diary.getName());
+        toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         
         rvImageList = findViewById(R.id.rvImageList);
         rvImageList.setLayoutManager(new LinearLayoutManager(this));
