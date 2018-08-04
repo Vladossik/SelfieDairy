@@ -98,6 +98,10 @@ public class DiaryActivity extends AppCompatActivity {
                     viewModel.getRepo().updateImage(imageSource);
                 } else {
                     viewModel.getRepo().insertImage(imageSource);
+    
+                    // Scrolling rv on top
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) rvImageList.getLayoutManager();
+                    layoutManager.smoothScrollToPosition(rvImageList, new RecyclerView.State(), 0);
                 }
             }
         }
