@@ -140,7 +140,8 @@ public class AddPhotoActivity extends AppCompatActivity {
 
                                 lastSavedCameraImage = new File(folder, "selfie_" +
                                         String.valueOf(System.currentTimeMillis()) + ".jpg");
-
+                                
+                                folder.mkdirs();
 
                                 Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
                                         "com.vlada.selfie_app.fileprovider",
