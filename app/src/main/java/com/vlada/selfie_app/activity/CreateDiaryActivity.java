@@ -35,7 +35,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private EditText etDescription;
     private Button btnReminderTime;
     private Spinner spnRemindFrequency;
-    
+    private Spinner spnAccessDiary;
     /**
      * Diary, which has been sent for editing or new created diary.
      */
@@ -62,8 +62,13 @@ public class CreateDiaryActivity extends AppCompatActivity {
         spnRemindFrequency = findViewById(R.id.spnRemindFrequency);
         spnRemindFrequency.setAdapter(new ArrayAdapter<>(
                 this, android.R.layout.simple_list_item_1, RemindFrequency.values()));
+        spnRemindFrequency.setPrompt("Frequency");
         spnRemindFrequency.setSelection(0);
         
+        //todo: spinner access 04.08.18
+        spnAccessDiary = findViewById(R.id.spnAccessDiary);
+//        spnAccessDiary.setAdapter();
+        spnAccessDiary.setPrompt("Access");
         
         // check if we have old diary to edit
         
