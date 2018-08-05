@@ -2,6 +2,7 @@ package com.vlada.selfie_app.database;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.os.Handler;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
@@ -9,6 +10,8 @@ import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Main class for interacting with data
@@ -140,6 +143,29 @@ public class Repository {
             @Override
             public void run() {
                 imageSourceDao.update(imageSource);
+            }
+        }).start();
+    }
+    
+    public interface BooleanCallback {
+        void onResult(boolean result);
+    }
+    
+    /** In other thread tries to find image and returns result in callback in ui thread.*/
+    public void checkIfImageExists(final String source, final int diaryId, final BooleanCallback callback) {
+        final Handler handler = new Handler();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<ImageSource> found = imageSourceDao.findByKeys(source, diaryId);
+                // return in ui thread.
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onResult(found.size() > 0);
+                    }
+                });
             }
         }).start();
     }

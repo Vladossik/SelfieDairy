@@ -1,5 +1,6 @@
 package com.vlada.selfie_app.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,6 +25,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.FileUtil;
 import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.ViewModel;
+import com.vlada.selfie_app.database.Repository;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
@@ -53,16 +56,22 @@ public class AddPhotoActivity extends AppCompatActivity {
     
     private Diary diary;
     
+    /** Store image placeholder in case of Vlada changes her opinion about add icon */
+    private Drawable imagePlaceholder;
     
     /**
      * Pointer to last saved file from camera.
      */
     private File lastSavedCameraImage;
+    private ViewModel viewModel;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_photo);
+        
+        // setup database in viewModel
+        viewModel = ViewModelProviders.of(this).get(ViewModel.class);
         
         // get diary from previous activity
         diary = (Diary) getIntent().getSerializableExtra("diary");
@@ -79,6 +88,8 @@ public class AddPhotoActivity extends AppCompatActivity {
         ivNewPhoto = findViewById(R.id.ivNewPhoto);
         tvDateOfCreate = findViewById(R.id.tvDateOfCreate);
         
+        // remember image placeholder in case of Vlada changes her opinion about add icon
+        imagePlaceholder = ivNewPhoto.getDrawable();
         
         if (getIntent().getBooleanExtra("editing", false)) {
             // editing existing imageSource
@@ -214,9 +225,26 @@ public class AddPhotoActivity extends AppCompatActivity {
                 
                 imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
                 
-                fillImageView(imageSource.getSource());
+                // check if image does not exist in database.
                 
-                imageSource.setDateOfCreate(Calendar.getInstance());
+                viewModel.getRepo().checkIfImageExists(imageSource.getSource(), 
+                        imageSource.getDiaryId(), new Repository.BooleanCallback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        if (result) {
+                            Toast.makeText(AddPhotoActivity.this, 
+                                    "Can not add this image. It already exists in this diary.", Toast.LENGTH_SHORT).show();
+                            // unset imageSource
+                            imageSource = null;
+                            // set default image for iv
+                            ivNewPhoto.setImageDrawable(imagePlaceholder);
+                        } else {
+                            // if no image was found - fill imageView.
+                            fillImageView(imageSource.getSource());
+                            imageSource.setDateOfCreate(Calendar.getInstance());
+                        }
+                    }
+                });
             }
         }
     }

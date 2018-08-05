@@ -76,10 +76,24 @@ public class ImageSourceDaoTest extends DatabaseTest {
         // retrieve all images in the diary
         imagesInDiary = imageSourceDao.getImagesForDiary(diary.getId());
         assertEquals(imagesInDiary.size(), 0);
-        
-        
-        
-        
-    
     }
+    
+    @Test
+    public void findImageByKeys() throws Exception {
+        Diary diary = new Diary("d1");
+        
+        insertDiaryAndUpdateId(diary);
+        
+        // delete by keys
+        List<ImageSource> found = imageSourceDao.findByKeys("src1", diary.getId());
+        assertEquals(0, found.size());
+        
+        ImageSource image = new ImageSource("src1", diary.getId());
+        imageSourceDao.insert(image);
+    
+        found = imageSourceDao.findByKeys("src1", diary.getId());
+        assertEquals(1, found.size());
+    }
+    
+    
 }

@@ -1,6 +1,7 @@
 package com.vlada.selfie_app.database.dao;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -20,6 +21,9 @@ public interface ImageSourceDao {
     
     @Query("DELETE FROM ImageSource WHERE source=:source AND diaryId=:diaryId")
     void deleteByKeys(String source, int diaryId);
+    
+    @Query("SELECT * FROM ImageSource WHERE source=:source AND diaryId=:diaryId")
+    List<ImageSource> findByKeys(String source, int diaryId);
     
     @Delete
     void delete(ImageSource... imageSources);
