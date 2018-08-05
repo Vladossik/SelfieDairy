@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.vlada.selfie_app.FileUtil;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
@@ -40,6 +41,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     EditText etPhotoDescription;
     TextView tvDateOfCreate;
     ImageView ivNewPhoto;
+    
+    /** Will be true when we finish activity with RESULT_OK*/
+    boolean resultOk = false;
     
     /**
      * True if we are editing old image
@@ -123,34 +127,19 @@ public class AddPhotoActivity extends AppCompatActivity {
                 .setItems(new String[]{"Camera", "Gallery"}, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dlg, int position) {
+                        // deleting previous created photo if it exists
+                        FileUtil.deleteImageIfExists(lastSavedCameraImage);
+                        lastSavedCameraImage = null;
+                        
                         switch (position) {
                             case 0:
-                                // intent for creating image from camera
-                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                
                                 // setup folder and file where to save new photo
-
-                                // storage/emulated/0/SelfieDiary
-                                File folder = new File(Environment.getExternalStorageDirectory()
-                                        .getAbsolutePath() + "/SelfieDiary");
+                                File folder = FileUtil.geFolderInExternal();
+                                lastSavedCameraImage = FileUtil.createImageFromFolder(folder);
                                 
-                                // storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/
-//                                File folder = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                                // intent for creating image from camera
+                                Intent cameraIntent = FileUtil.createCameraIntent(AddPhotoActivity.this, lastSavedCameraImage);
                                 
-                                // storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/SelfieDiary
-//                                File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//                                folder = new File(folder, "SelfieDiary");
-                                
-                                lastSavedCameraImage = new File(folder, "selfie_" +
-                                        String.valueOf(System.currentTimeMillis()) + ".jpg");
-                                
-                                folder.mkdirs();
-                                
-                                Uri photoURI = FileProvider.getUriForFile(AddPhotoActivity.this,
-                                        "com.vlada.selfie_app.fileprovider",
-                                        lastSavedCameraImage);
-                                
-                                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
                                 break;
@@ -199,6 +188,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra("imageSource", imageSource);
         setResult(RESULT_OK, intent);
+        resultOk = true;
         finish();
     }
     
@@ -210,7 +200,7 @@ public class AddPhotoActivity extends AppCompatActivity {
             if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
                 
                 Uri imageUri;
-                if (requestCode == CAMERA_REQUEST_CODE) {
+                if (requestCode == CAMERA_REQUEST_CODE) {// from camera
                     
                     if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
                         imageUri = Uri.fromFile(lastSavedCameraImage);
@@ -219,8 +209,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    
-                } else {
+                } else { // from gallery
                     imageUri = data.getData();
                 }
 //                ivNewPhoto.setImageURI(imageUri);
@@ -236,7 +225,7 @@ public class AddPhotoActivity extends AppCompatActivity {
     }
     
     private void galleryAddPic(File imageFile) {
-         // directly insert in android image database
+        // directly insert in android image database
 //        try {
 //            MediaStore.Images.Media.insertImage(getContentResolver(),
 //                    imageFile.getAbsolutePath(), imageFile.getName(), null);
@@ -244,10 +233,10 @@ public class AddPhotoActivity extends AppCompatActivity {
 //            Log.d("my_tag", "galleryAddPic: error: " + e.getMessage());
 //            e.printStackTrace();
 //        }
-    
+        
         // sending broadcast to scan new images.
         sendBroadcast(new Intent(
-                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
         
         
     }
@@ -273,5 +262,15 @@ public class AddPhotoActivity extends AppCompatActivity {
             cursor.close();
         }
         return result;
+    }
+    
+    @Override
+    protected void onDestroy() {
+        
+        if (!resultOk) {
+            FileUtil.deleteImageIfExists(lastSavedCameraImage);
+        }
+        
+        super.onDestroy();
     }
 }

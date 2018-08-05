@@ -38,7 +38,7 @@ public class DiaryActivity extends AppCompatActivity {
         
         // get diary from previous activity
         diary = (Diary) getIntent().getSerializableExtra("diary");
-    
+        
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(diary.getName());
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
@@ -62,7 +62,7 @@ public class DiaryActivity extends AppCompatActivity {
                 }
             }
         });
-    
+        
         // fab setup
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,7 @@ public class DiaryActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    
+        
         if (requestCode == ADD_PHOTO_REQUEST || requestCode == EDIT_PHOTO_REQUEST) {
             if (resultCode == RESULT_OK) {
                 ImageSource imageSource = (ImageSource) data.getSerializableExtra("imageSource");
@@ -98,7 +98,7 @@ public class DiaryActivity extends AppCompatActivity {
                     viewModel.getRepo().updateImage(imageSource);
                 } else {
                     viewModel.getRepo().insertImage(imageSource);
-    
+                    
                     // Scrolling rv on top
                     LinearLayoutManager layoutManager = (LinearLayoutManager) rvImageList.getLayoutManager();
                     layoutManager.smoothScrollToPosition(rvImageList, new RecyclerView.State(), 0);
