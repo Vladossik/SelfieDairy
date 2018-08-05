@@ -85,11 +85,14 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                     .centerInside()
                     .into(holder.imageView);
             
+            // setup visibility for empty description
             if (imageSource.getDescription().equals("")) {
                 holder.description.setVisibility(View.GONE);
             } else {
-                holder.description.setText(imageSource.getDescription());
+                holder.description.setVisibility(View.VISIBLE);
             }
+            // set description text to view
+            holder.description.setText(imageSource.getDescription());
             
         } else {
             // Covers the case of data not being ready yet.
