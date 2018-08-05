@@ -103,7 +103,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
         
     }
     
-    public void showDiarySetupDialog(final Context context, final Diary diary) {
+    private void showDiarySetupDialog(final Context context, final Diary diary) {
         
         final String doneOrWaiting = diary.isDone() ? "Expected" : "Done";
         

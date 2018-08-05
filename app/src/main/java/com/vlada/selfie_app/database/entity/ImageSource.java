@@ -77,4 +77,9 @@ public class ImageSource implements Serializable {
     public int getDiaryId() {
         return diaryId;
     }
+    
+    @Override
+    public String toString() {
+        return "ImageSource with source: " + getSource() + " and description: " + getDescription();
+    }
 }

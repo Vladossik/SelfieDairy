@@ -61,15 +61,31 @@ public class FileUtil {
     }
     
     
+    public static void scanGalleryForImage(Context context, File imageFile) {
+        // directly insert in android image database
+//        try {
+//            MediaStore.Images.Media.insertImage(getContentResolver(),
+//                    imageFile.getAbsolutePath(), imageFile.getName(), null);
+//        } catch (FileNotFoundException e) {
+//            Log.d("my_tag", "scanGalleryForImage: error: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+        
+        // sending broadcast to scan new images.
+        context.sendBroadcast(new Intent(
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
+    }
     
     
     
-    public static void deleteImageIfExists(File image) {
+    public static boolean deleteImageIfExists(File image) {
         if (image != null && image.exists() && image.isFile()) {
             boolean result = image.delete();
             if (result) {
                 Log.d("my_tag", "deleted image: " + image.getAbsolutePath());
+                return true;
             }
         }
+        return false;
     }
 }

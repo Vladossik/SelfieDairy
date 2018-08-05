@@ -7,9 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,7 +28,6 @@ import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -204,7 +201,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                     
                     if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
                         imageUri = Uri.fromFile(lastSavedCameraImage);
-                        galleryAddPic(lastSavedCameraImage);
+                        FileUtil.scanGalleryForImage(this, lastSavedCameraImage);
                     } else {
                         Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
                         return;
@@ -222,23 +219,6 @@ public class AddPhotoActivity extends AppCompatActivity {
                 imageSource.setDateOfCreate(Calendar.getInstance());
             }
         }
-    }
-    
-    private void galleryAddPic(File imageFile) {
-        // directly insert in android image database
-//        try {
-//            MediaStore.Images.Media.insertImage(getContentResolver(),
-//                    imageFile.getAbsolutePath(), imageFile.getName(), null);
-//        } catch (FileNotFoundException e) {
-//            Log.d("my_tag", "galleryAddPic: error: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-        
-        // sending broadcast to scan new images.
-        sendBroadcast(new Intent(
-                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
-        
-        
     }
     
     private void fillImageView(String imagePath) {

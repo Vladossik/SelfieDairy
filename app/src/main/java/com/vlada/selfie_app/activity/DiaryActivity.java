@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -97,8 +98,10 @@ public class DiaryActivity extends AppCompatActivity {
                 deleted.add(image);
             }
         }
-    
-        Log.d("my_tag", "findDeletedImages: Found deleted images: " + Utils.joinToString(deleted));
+        
+        if (!deleted.isEmpty()) {
+            Log.d("my_tag", "findDeletedImages: Found deleted images: " + Utils.joinToString(deleted));
+        }
         
         return deleted;
     }
@@ -153,9 +156,14 @@ public class DiaryActivity extends AppCompatActivity {
                 } else {
                     viewModel.getRepo().insertImage(imageSource);
                     
-                    // Scrolling rv on top
-                    LinearLayoutManager layoutManager = (LinearLayoutManager) rvImageList.getLayoutManager();
-                    layoutManager.smoothScrollToPosition(rvImageList, new RecyclerView.State(), 0);
+                    // Scrolling rv on top with delay 100 ms
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            LinearLayoutManager layoutManager = (LinearLayoutManager) rvImageList.getLayoutManager();
+                            layoutManager.smoothScrollToPosition(rvImageList, new RecyclerView.State(), 0);
+                        }
+                    }, 100);
                 }
             }
         }

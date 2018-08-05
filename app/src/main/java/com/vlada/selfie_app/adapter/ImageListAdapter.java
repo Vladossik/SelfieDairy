@@ -1,9 +1,11 @@
 package com.vlada.selfie_app.adapter;
 
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.vlada.selfie_app.FileUtil;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.DiaryActivity;
@@ -97,11 +101,8 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                     } else {
                         ((Vibrator) activity.getSystemService(VIBRATOR_SERVICE)).vibrate(100);
                     }
-                    
-                    // just delete image from path
-                    viewModel.getRepo().deleteImage(images.get(position));
                 }
-                
+                showImageDeletionDialog(images.get(position));
                 return true;
             }
         });
@@ -115,6 +116,41 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         });
     }
     
+    
+    private void showImageDeletionDialog(final ImageSource image) {
+        String[] items = new String[]{"Delete file with image"};
+        final boolean[] checkedItems = new boolean[]{false};
+        
+        new AlertDialog.Builder(activity)
+                .setTitle("Delete image")
+                .setNegativeButton("Cancel", null)
+                .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedItems[which] = isChecked;
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (checkedItems[0]) {
+                            // delete file as well
+                            File file = new File(image.getSource());
+                            if (FileUtil.deleteImageIfExists(file)) {
+                                Log.d("my_tag", "showImageDeletionDialog: deleted file as well");
+                                Toast.makeText(activity, "File was deleted", Toast.LENGTH_SHORT).show();
+                                FileUtil.scanGalleryForImage(activity, file);
+                            }
+                        }
+                        
+                        // just delete image from path
+                        viewModel.getRepo().deleteImage(image);
+                        Log.d("my_tag", "showImageDeletionDialog: deleted image from db");
+                    }
+                })
+                .create()
+                .show();
+    }
     
     /**
      * Updates images in rv, using diffUtil
