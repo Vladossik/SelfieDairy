@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
@@ -24,7 +25,6 @@ import com.vlada.selfie_app.fragment.DiaryListFragment;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.adapter.ViewPagerAdapter;
 
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity {
@@ -86,7 +86,7 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in waiting diaries");
                 } else {
-                    Log.d("my_tag", "observer: updated waiting diaries: " + joinToString(diaries));
+                    Log.d("my_tag", "observer: updated waiting diaries: " + Utils.joinToString(diaries));
                     waitingFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
             }
@@ -98,7 +98,7 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in done diaries");
                 } else {
-                    Log.d("my_tag", "observer: updated done diaries: " + joinToString(diaries));
+                    Log.d("my_tag", "observer: updated done diaries: " + Utils.joinToString(diaries));
                     doneFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
             }
@@ -126,14 +126,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
     
-    
-    private <T> String joinToString(List<T> list) {
-        StringBuilder s = new StringBuilder();
-        for (T item : list) {
-            s.append(", ").append(item);
-        }
-        return s.toString();
-    }
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

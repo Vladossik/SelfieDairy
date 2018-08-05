@@ -2,22 +2,28 @@ package com.vlada.selfie_app.activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.ImageListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryActivity extends AppCompatActivity {
@@ -58,7 +64,13 @@ public class DiaryActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<ImageSource> imageSources) {
                 if (imageSources != null) {
-                    imageListAdapter.setImages(imageSources);
+                    List<ImageSource> deleted = findDeletedImages(imageSources);
+                    
+                    if (!deleted.isEmpty()) {
+                        startDialogToDeleteImages(deleted, imageSources);
+                    } else {
+                        imageListAdapter.setImages(imageSources);
+                    }
                 }
             }
         });
@@ -76,6 +88,48 @@ public class DiaryActivity extends AppCompatActivity {
             }
         });
     }
+    
+    List<ImageSource> findDeletedImages(List<ImageSource> imageList) {
+        List<ImageSource> deleted = new ArrayList<>();
+        
+        for (ImageSource image : imageList) {
+            if (!new File(image.getSource()).exists()) {
+                deleted.add(image);
+            }
+        }
+    
+        Log.d("my_tag", "findDeletedImages: Found deleted images: " + Utils.joinToString(deleted));
+        
+        return deleted;
+    }
+    
+    public void startDialogToDeleteImages(final List<ImageSource> deletedImages, final List<ImageSource> allImages) {
+        
+        new AlertDialog.Builder(this)
+                .setTitle("Remove deleted photos")
+                .setMessage("Found some deleted files. Remove them from diary?")
+                .setCancelable(false)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // updating images in rv as usual
+                        imageListAdapter.setImages(allImages);
+                    }
+                })
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // requesting deletion of files in database and then 
+                        // waiting for new data update in observer
+                        ImageSource[] array = deletedImages.toArray(new ImageSource[deletedImages.size()]);
+                        viewModel.getRepo().deleteImage(array);
+                    }
+                })
+                .create()
+                .show();
+        
+    }
+    
     
     public void openActivityToEditImage(ImageSource image) {
         Intent intent = new Intent(this, AddPhotoActivity.class);

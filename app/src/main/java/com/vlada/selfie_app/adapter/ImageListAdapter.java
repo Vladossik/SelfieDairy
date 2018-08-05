@@ -120,6 +120,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
      * Updates images in rv, using diffUtil
      */
     public void setImages(List<ImageSource> newImages) {
+        
         if (images != null && newImages != null) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.images, newImages));
             images = newImages;
