@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.vlada.selfie_app.FileUtil;
+import com.vlada.selfie_app.FileUtils;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.DiaryActivity;
@@ -144,10 +144,10 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                         if (checkedItems[0]) {
                             // delete file as well
                             File file = new File(image.getSource());
-                            if (FileUtil.deleteImageIfExists(file)) {
+                            if (FileUtils.deleteImageIfExists(file)) {
                                 Log.d("my_tag", "showImageDeletionDialog: deleted file as well");
                                 Toast.makeText(activity, "File was deleted", Toast.LENGTH_SHORT).show();
-                                FileUtil.scanGalleryForImage(activity, file);
+                                FileUtils.scanGalleryForImage(activity, file);
                             }
                         }
                         

@@ -23,7 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.vlada.selfie_app.FileUtil;
+import com.vlada.selfie_app.FileUtils;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.database.Repository;
@@ -136,17 +136,17 @@ public class AddPhotoActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dlg, int position) {
                         // deleting previous created photo if it exists
-                        FileUtil.deleteImageIfExists(lastSavedCameraImage);
+                        FileUtils.deleteImageIfExists(lastSavedCameraImage);
                         lastSavedCameraImage = null;
                         
                         switch (position) {
                             case 0:
                                 // setup folder and file where to save new photo
-                                File folder = FileUtil.geFolderInExternal();
-                                lastSavedCameraImage = FileUtil.createImageFromFolder(folder);
+                                File folder = FileUtils.geFolderInExternal();
+                                lastSavedCameraImage = FileUtils.createImageInFolder(folder);
                                 
                                 // intent for creating image from camera
-                                Intent cameraIntent = FileUtil.createCameraIntent(AddPhotoActivity.this, lastSavedCameraImage);
+                                Intent cameraIntent = FileUtils.createCameraIntent(AddPhotoActivity.this, lastSavedCameraImage);
                                 
                                 startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
                                 
@@ -212,7 +212,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                     
                     if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
                         imageUri = Uri.fromFile(lastSavedCameraImage);
-                        FileUtil.scanGalleryForImage(this, lastSavedCameraImage);
+                        FileUtils.scanGalleryForImage(this, lastSavedCameraImage);
                     } else {
                         Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
                         return;
@@ -276,7 +276,7 @@ public class AddPhotoActivity extends AppCompatActivity {
     protected void onDestroy() {
         
         if (!resultOk) {
-            FileUtil.deleteImageIfExists(lastSavedCameraImage);
+            FileUtils.deleteImageIfExists(lastSavedCameraImage);
         }
         
         super.onDestroy();
