@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import com.vlada.selfie_app.enums.RemindFrequency;
+
 import java.io.Serializable;
 import java.util.Calendar;
 

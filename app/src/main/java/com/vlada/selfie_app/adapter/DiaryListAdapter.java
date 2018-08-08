@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     class DiaryViewHolder extends RecyclerView.ViewHolder {
         private final TextView title;
         private final TextView description;
+        private final ImageView ivPrivate;
         /**
          * Root view for item. Usually it is LinearLayout
          */
@@ -41,6 +43,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
             this.root = root;
             title = root.findViewById(R.id.title);
             description = root.findViewById(R.id.description);
+            ivPrivate = root.findViewById(R.id.ivPrivate);
         }
     }
     
@@ -65,9 +68,10 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     @Override
     public void onBindViewHolder(@NonNull DiaryViewHolder holder, final int position) {
         if (diaries != null) {
-            Diary current = diaries.get(position);
-            holder.title.setText(current.getName());
-            holder.description.setText(current.getDescription());
+            Diary diary = diaries.get(position);
+            holder.title.setText(diary.getName());
+            holder.description.setText(diary.getDescription());
+            holder.ivPrivate.setVisibility(diary.isPrivate() ? View.VISIBLE : View.INVISIBLE);
         } else {
             // Covers the case of data not being ready yet.
             holder.title.setText("No Title");

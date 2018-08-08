@@ -2,7 +2,7 @@ package com.vlada.selfie_app.database;
 
 import android.arch.persistence.room.TypeConverter;
 
-import com.vlada.selfie_app.database.entity.RemindFrequency;
+import com.vlada.selfie_app.enums.RemindFrequency;
 
 import java.util.Calendar;
 

@@ -1,7 +1,7 @@
 package com.vlada.selfie_app.database;
 
 import com.vlada.selfie_app.database.entity.Diary;
-import com.vlada.selfie_app.database.entity.RemindFrequency;
+import com.vlada.selfie_app.enums.RemindFrequency;
 
 import org.junit.Test;
 

@@ -3,10 +3,8 @@ package com.vlada.selfie_app.activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -18,12 +16,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
-import com.vlada.selfie_app.database.entity.RemindFrequency;
+import com.vlada.selfie_app.enums.RemindFrequency;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -35,7 +34,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private EditText etDescription;
     private Button btnReminderTime;
     private Spinner spnRemindFrequency;
-    private Spinner spnAccessDiary;
+    private Switch swchPrivate;
     /**
      * Diary, which has been sent for editing or new created diary.
      */
@@ -65,10 +64,8 @@ public class CreateDiaryActivity extends AppCompatActivity {
         spnRemindFrequency.setPrompt("Frequency");
         spnRemindFrequency.setSelection(0);
         
-        //todo: spinner access 04.08.18
-        spnAccessDiary = findViewById(R.id.spnAccessDiary);
-//        spnAccessDiary.setAdapter();
-        spnAccessDiary.setPrompt("Access");
+        
+        swchPrivate = findViewById(R.id.swchPrivate);
         
         // check if we have old diary to edit
         
@@ -82,6 +79,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
             
             spnRemindFrequency.setSelection(diary.getRemindFrequency().ordinal());
             
+            swchPrivate.setChecked(diary.isPrivate());
         } else {
             diary = new Diary();
         }
@@ -140,6 +138,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         diary.setRemindFrequency(RemindFrequency.values()[selectedFrequency]);
         // Reminder time is updated in time picker handler
         
+        diary.setPrivate(swchPrivate.isChecked());
         
         Intent intent = new Intent();
         
