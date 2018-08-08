@@ -28,9 +28,7 @@ public class Diary implements Serializable{
     
     private boolean isDone = false;
     
-//    public Diary(@NonNull Calendar dateOfCreate) {
-//        this.dateOfCreate = dateOfCreate;
-//    }
+    private boolean isPrivate = false;
     
     public Diary() {
         dateOfCreate = Calendar.getInstance();
@@ -116,7 +114,15 @@ public class Diary implements Serializable{
         return "Diary(name = " + name + ")";
     }
     
+    public boolean isPrivate() {
+        return isPrivate;
+    }
     
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+
 //    public boolean equalWith(Diary other) {
 //        return id == other.id
 //                && name.equals(other.name)

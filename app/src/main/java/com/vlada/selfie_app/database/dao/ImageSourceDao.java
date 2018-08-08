@@ -42,7 +42,10 @@ public interface ImageSourceDao {
     
     
     @Query("SELECT * from ImageSource ORDER BY dateOfCreate DESC")
-    LiveData<List<ImageSource>> getAllImages();
+    LiveData<List<ImageSource>> getAllImagesLive();
+    
+    @Query("SELECT * from ImageSource ORDER BY dateOfCreate DESC")
+    List<ImageSource> getAllImages();
     
     @Update
     void update(ImageSource imageSource);

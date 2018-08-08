@@ -8,33 +8,68 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
-import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
-import com.facebook.crypto.Crypto;
-import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.Entity;
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.exception.KeyChainException;
-import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.keygen.PasswordBasedKeyDerivation;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.security.SecureRandom;
 
 public class FileUtils {
     private FileUtils() {
     }
+    
+    private static final String FOLDER_NAME = "SelfieDiary";
+    
+    private static class Folders {
+        
+        
+        /**
+         * storage/emulated/0/SelfieDiary
+         */
+        public static File geFolderInExternal() {
+            return new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+        }
+        
+        /**
+         * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures
+         */
+        public static File getFolderInAndroidData(Context context) {
+            return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        }
+        
+        /**
+         * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/SelfieDiary
+         */
+        public static File getFolderInPictures() {
+            File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            folder = new File(folder, FOLDER_NAME);
+            return folder;
+        }
+    }
+    
+    
+//    private static File getCachedDecodedImage(Context context, ImageSource image) {
+//        
+//        File cachedImage = image.getCachedFile();
+//        
+//        if (cachedImage.exists()) {
+//            Log.d("my_tag", "getCachedDecodedImage: found cached image: " + cachedImage.getAbsolutePath());
+//            return cachedImage;
+//        } else {
+//            try {
+//                Encryption.decryptFile(context, image.getEncodedSource(), cachedImage);
+//                Log.d("my_tag", "getCachedDecodedImage: decrypted image: " + cachedImage);
+//                return cachedImage;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//    }
     
     
     public static Intent createCameraIntent(Context context, File fileToSave) {
@@ -52,31 +87,26 @@ public class FileUtils {
         return intent;
     }
     
-    private static final String FOLDER_NAME = "SelfieDiary";
     
     /**
-     * storage/emulated/0/SelfieDiary
+     * Returns folder where images are placed
      */
-    public static File geFolderInExternal() {
-        return new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+    public static File getImageFolder() {
+        return Folders.geFolderInExternal();
+    }
+    
+    public static File getEncodedFolder() {
+        return new File(getImageFolder(), "encoded");
+    }
+    
+    
+    public static File getCacheFolder() {
+        return new File(getImageFolder(), "cache");
     }
     
     /**
-     * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures
+     * Creates a jpg file in folder with identical name to store selfie.
      */
-    public static File getFolderInAndroidData(Context context) {
-        return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    }
-    
-    /**
-     * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/SelfieDiary
-     */
-    public static File getFolderInPictures() {
-        File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        folder = new File(folder, FOLDER_NAME);
-        return folder;
-    }
-    
     public static File createImageInFolder(File folder) {
         return new File(folder, "selfie_" +
                 String.valueOf(System.currentTimeMillis()) + ".jpg");

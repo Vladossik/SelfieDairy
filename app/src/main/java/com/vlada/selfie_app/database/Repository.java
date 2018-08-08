@@ -46,9 +46,6 @@ public class Repository {
         return diaryDao.getAllWaitingDiaries();
     }
     
-    public LiveData<List<ImageSource>> getAllImages() {
-        return imageSourceDao.getAllImages();
-    }
     
     public LiveData<List<ImageSource>> getAllImagesForDiary(int diaryId) {
         return imageSourceDao.getImagesForDiaryLive(diaryId);

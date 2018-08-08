@@ -12,9 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
@@ -27,7 +24,7 @@ public class EncryptionTest {
     private Context context = InstrumentationRegistry.getTargetContext();
     
     public EncryptionTest() {
-        folder = FileUtils.geFolderInExternal();
+        folder = FileUtils.getImageFolder();
         folder.mkdirs();
     }
     

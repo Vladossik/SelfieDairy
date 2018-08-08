@@ -44,7 +44,7 @@ public class ImageSourceDaoTest extends DatabaseTest {
         
         // number of images in total should be 2
         
-        List<ImageSource> allImages = LiveDataTestUtil.getValue(imageSourceDao.getAllImages());
+        List<ImageSource> allImages = imageSourceDao.getAllImages();
         
         assertEquals(2, allImages.size());
     }

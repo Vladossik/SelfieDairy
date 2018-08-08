@@ -142,7 +142,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                         switch (position) {
                             case 0:
                                 // setup folder and file where to save new photo
-                                File folder = FileUtils.geFolderInExternal();
+                                File folder = FileUtils.getImageFolder();
                                 lastSavedCameraImage = FileUtils.createImageInFolder(folder);
                                 
                                 // intent for creating image from camera

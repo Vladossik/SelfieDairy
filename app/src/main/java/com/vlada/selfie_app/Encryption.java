@@ -110,4 +110,26 @@ public class Encryption {
     
     
     
+//    public class CustomKeyChain implements KeyChain {
+//    
+//        @Override
+//        public byte[] getCipherKey() throws KeyChainException {
+//            return new byte[0];
+//        }
+//    
+//        @Override
+//        public byte[] getMacKey() throws KeyChainException {
+//            return new byte[0];
+//        }
+//    
+//        @Override
+//        public byte[] getNewIV() throws KeyChainException {
+//            return new byte[0];
+//        }
+//    
+//        @Override
+//        public void destroyKeys() {
+//        
+//        }
+//    }
 }

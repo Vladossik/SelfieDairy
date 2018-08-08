@@ -6,6 +6,9 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import com.vlada.selfie_app.FileUtils;
+
+import java.io.File;
 import java.io.Serializable;
 import java.util.Calendar;
 
@@ -25,8 +28,12 @@ public class ImageSource implements Serializable {
     @NonNull
     private String source;
     
+    @NonNull
+    private String encodedSource;
     
-    /** Id of bound diary. Should be const*/
+    /**
+     * Id of bound diary. Should be const
+     */
     private int diaryId;
     
     /**
@@ -37,11 +44,17 @@ public class ImageSource implements Serializable {
     
     private String description;
     
-    /** Primary constructor*/
+    private boolean isEncrypted = false;
+    
+    /**
+     * Primary constructor
+     */
     public ImageSource(@NonNull String source, int diaryId) {
         this.diaryId = diaryId;
         this.source = source;
         dateOfCreate = Calendar.getInstance();
+        
+        genEncodedSource();
     }
     
     @Ignore
@@ -50,6 +63,11 @@ public class ImageSource implements Serializable {
         this(source, diaryId);
         this.source = source;
         this.description = description;
+    }
+    
+    public void genEncodedSource() {
+        String sourceName = getSourceFile().getName();
+        encodedSource = new File(FileUtils.getEncodedFolder(), sourceName + ".encoded").getAbsolutePath();
     }
     
     @NonNull
@@ -81,5 +99,42 @@ public class ImageSource implements Serializable {
     @Override
     public String toString() {
         return "ImageSource with source: " + getSource() + " and description: " + getDescription();
+    }
+    
+    
+    /**
+     * Returns default image source string, converted to File object.
+     */
+    @Ignore
+    public File getSourceFile() {
+        return new File(getSource());
+    }
+    
+    @Ignore
+    public File getEncodedFile() {
+        return new File(getSource());
+    }
+    
+    @Ignore
+    public File getCachedFile() {
+        return new File(FileUtils.getCacheFolder(), "cached_" + getSourceFile().getName());
+    }
+    
+    
+    @NonNull
+    public String getEncodedSource() {
+        return encodedSource;
+    }
+    
+    public void setEncodedSource(@NonNull String encodedSource) {
+        this.encodedSource = encodedSource;
+    }
+    
+    public boolean isEncrypted() {
+        return isEncrypted;
+    }
+    
+    public void setEncrypted(boolean encrypted) {
+        isEncrypted = encrypted;
     }
 }

@@ -1,5 +1,6 @@
 package com.vlada.selfie_app.adapter;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.VibrationEffect;
@@ -16,7 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.crypto.exception.CryptoInitializationException;
+import com.facebook.crypto.exception.KeyChainException;
 import com.squareup.picasso.Picasso;
+import com.vlada.selfie_app.Encryption;
 import com.vlada.selfie_app.FileUtils;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
@@ -24,6 +28,9 @@ import com.vlada.selfie_app.activity.DiaryActivity;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -75,11 +82,11 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
             
             holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(imageSource.getDateOfCreate().getTime()));
-            Log.d("my_tag", "onBindViewHolder: received path: " + imageSource.getSource());
-            
+            Log.d("my_tag", "onBindViewHolder-" + position + ": received path: " + imageSource.getSource());
             // loading image in imageView from path
             Picasso.get()
                     .load(new File(imageSource.getSource()))
+                    .placeholder(R.drawable.add_photo)
                     .resize(800, 800)
                     .onlyScaleDown()
                     .centerInside()
