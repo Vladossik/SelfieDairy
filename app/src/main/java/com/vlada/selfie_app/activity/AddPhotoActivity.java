@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.vlada.selfie_app.Encryption;
 import com.vlada.selfie_app.FileUtils;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
@@ -31,6 +32,7 @@ import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -42,7 +44,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     TextView tvDateOfCreate;
     ImageView ivNewPhoto;
     
-    /** Will be true when we finish activity with RESULT_OK*/
+    /**
+     * Will be true when we finish activity with RESULT_OK
+     */
     boolean resultOk = false;
     
     /**
@@ -56,7 +60,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     
     private Diary diary;
     
-    /** Store image placeholder in case of Vlada changes her opinion about add icon */
+    /**
+     * Store image placeholder in case of Vlada changes her opinion about add icon
+     */
     private Drawable imagePlaceholder;
     
     /**
@@ -101,7 +107,7 @@ public class AddPhotoActivity extends AppCompatActivity {
             tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(imageSource.getDateOfCreate().getTime()));
             
-            fillImageView(imageSource.getSource());
+            fillImageView();
             etPhotoDescription.setText(imageSource.getDescription());
             
         } else {
@@ -207,51 +213,86 @@ public class AddPhotoActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST_CODE || requestCode == GALLERY_REQUEST_CODE) {
                 
-                Uri imageUri;
                 if (requestCode == CAMERA_REQUEST_CODE) {// from camera
                     
                     if (lastSavedCameraImage != null && lastSavedCameraImage.exists()) {
-                        imageUri = Uri.fromFile(lastSavedCameraImage);
-                        FileUtils.scanGalleryForImage(this, lastSavedCameraImage);
                     } else {
                         Toast.makeText(this, "Error: Image from camera not found.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    
+                    imageSource = new ImageSource(lastSavedCameraImage.getAbsolutePath(), diary.getId());
+                    
+                    if (diary.isPrivate()) {
+                        try {
+                            Encryption.encryptFile(this, imageSource.getSourceFile(), imageSource.getEncodedFile());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Encryption error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            imageSource = null;
+                            return;
+                        }
+                        imageSource.setEncrypted(true);
+                        FileUtils.deleteImageIfExists(imageSource.getSourceFile());
+                    } else {
+                        // notify gallery about new non-encrypted image
+                        FileUtils.scanGalleryForImage(this, lastSavedCameraImage);
+                    }
                 } else { // from gallery
-                    imageUri = data.getData();
+                    Uri imageUri = data.getData();
+                    imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
+                    
+                    if (diary.isPrivate()) {
+                        try {
+                            Encryption.encryptFile(this, imageSource.getSourceFile(), imageSource.getEncodedFile());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Encryption error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            imageSource = null;
+                            return;
+                        }
+                        imageSource.setEncrypted(true);
+                    }
                 }
-//                ivNewPhoto.setImageURI(imageUri);
-                Log.d("my_tag", "received image Uri from picker: " + imageUri);
-                
-                imageSource = new ImageSource(getRealPathFromURI(imageUri), diary.getId());
                 
                 // check if image does not exist in database.
                 
-                viewModel.getRepo().checkIfImageExists(imageSource.getSource(), 
+                viewModel.getRepo().checkIfImageExists(imageSource.getSource(),
                         imageSource.getDiaryId(), new Repository.BooleanCallback() {
-                    @Override
-                    public void onResult(boolean result) {
-                        if (result) {
-                            Toast.makeText(AddPhotoActivity.this, 
-                                    "Can not add this image. It already exists in this diary.", Toast.LENGTH_SHORT).show();
-                            // unset imageSource
-                            imageSource = null;
-                            // set default image for iv
-                            ivNewPhoto.setImageDrawable(imagePlaceholder);
-                        } else {
-                            // if no image was found - fill imageView.
-                            fillImageView(imageSource.getSource());
-                            imageSource.setDateOfCreate(Calendar.getInstance());
-                        }
-                    }
-                });
+                            @Override
+                            public void onResult(boolean result) {
+                                if (result) {
+                                    Toast.makeText(AddPhotoActivity.this,
+                                            "Can not add this image. It already exists in this diary.", Toast.LENGTH_SHORT).show();
+                                    // unset imageSource
+                                    FileUtils.deleteImageIfExists(imageSource.getEncodedFile());
+                                    imageSource = null;
+                                    // set default image for iv
+                                    ivNewPhoto.setImageDrawable(imagePlaceholder);
+                                } else {
+                                    // if no image was found - fill imageView.
+                                    fillImageView();
+                                    imageSource.setDateOfCreate(Calendar.getInstance());
+                                }
+                            }
+                        });
             }
         }
     }
     
-    private void fillImageView(String imagePath) {
+    private void fillImageView() {
+        if (imageSource == null)
+            return;
+        
+        File imageFile = FileUtils.getDecodedImage(this, imageSource);
+        
+        if (imageFile == null) {
+            Toast.makeText(this, "Error while loading image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         Picasso.get()
-                .load(new File(imagePath))
+                .load(imageFile)
                 .resize(800, 800)
                 .onlyScaleDown()
                 .centerInside()

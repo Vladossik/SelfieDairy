@@ -65,6 +65,7 @@ public class ImageSource implements Serializable {
         this.description = description;
     }
     
+    /** Generates a path for encoded image copy.*/
     public void genEncodedSource() {
         String sourceName = getSourceFile().getName();
         encodedSource = new File(FileUtils.getEncodedFolder(), sourceName + ".encoded").getAbsolutePath();
@@ -112,12 +113,17 @@ public class ImageSource implements Serializable {
     
     @Ignore
     public File getEncodedFile() {
-        return new File(getSource());
+        File encodedSource = new File(getEncodedSource());
+        encodedSource.getParentFile().mkdirs();
+        return encodedSource;
+        
     }
     
     @Ignore
     public File getCachedFile() {
-        return new File(FileUtils.getCacheFolder(), "cached_" + getSourceFile().getName());
+        File cacheFolder = FileUtils.getCacheFolder();
+        cacheFolder.mkdirs();
+        return new File(cacheFolder, "cached_" + getSourceFile().getName());
     }
     
     

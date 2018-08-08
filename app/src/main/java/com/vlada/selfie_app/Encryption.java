@@ -38,7 +38,7 @@ public class Encryption {
      * It reads all file in memory before encryption, so input and output files may be the same.
      */
     public static void encryptFile(Context context, File inputFile, File outputFile)
-            throws IOException, KeyChainException, CryptoInitializationException {
+            throws Exception {
         
 //        PasswordBasedKeyDerivation passwordBasedKeyDerivation = new PasswordBasedKeyDerivation(new SecureRandom(), new SystemNativeCryptoLibrary());
 //        passwordBasedKeyDerivation.setPassword(password);
@@ -67,6 +67,7 @@ public class Encryption {
         // Write plaintext to it.
         cipherOutputStream.write(inputBytes);
         cipherOutputStream.close();
+        Log.d("my_tag", "encryptFile: result in: " + outputFile.getAbsolutePath());
     }
     
     /**
@@ -74,7 +75,7 @@ public class Encryption {
      * It reads all file in memory before decryption, so input and output files may be the same.
      */
     public static void decryptFile(Context context, File inputFile, File outputFile)
-            throws IOException, KeyChainException, CryptoInitializationException {
+            throws Exception {
         // Get the file to which ciphertext has been written.
         FileInputStream fileInputStream = new FileInputStream(inputFile);
         
@@ -106,6 +107,7 @@ public class Encryption {
         cipherInputStream.close();
         
         FileUtils.writeByteFile(byteArrayOutputStream.toByteArray(), outputFile);
+        Log.d("my_tag", "decryptFile: result in: " + outputFile.getAbsolutePath());
     }
     
     

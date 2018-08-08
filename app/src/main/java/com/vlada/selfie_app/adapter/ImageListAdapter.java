@@ -83,14 +83,19 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
             holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(imageSource.getDateOfCreate().getTime()));
             Log.d("my_tag", "onBindViewHolder-" + position + ": received path: " + imageSource.getSource());
-            // loading image in imageView from path
-            Picasso.get()
-                    .load(new File(imageSource.getSource()))
-                    .placeholder(R.drawable.add_photo)
-                    .resize(800, 800)
-                    .onlyScaleDown()
-                    .centerInside()
-                    .into(holder.imageView);
+            
+            File imageFile = FileUtils.getDecodedImage(activity, imageSource);
+            
+            // loading image in imageView from file
+            if (imageFile != null) {
+                Picasso.get()
+                        .load(imageFile)
+                        .placeholder(R.drawable.add_photo)
+                        .resize(800, 800)
+                        .onlyScaleDown()
+                        .centerInside()
+                        .into(holder.imageView);
+            }
             
             // setup visibility for empty description
             if (imageSource.getDescription().equals("")) {

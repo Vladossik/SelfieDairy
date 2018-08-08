@@ -94,7 +94,7 @@ public class DiaryActivity extends AppCompatActivity {
         List<ImageSource> deleted = new ArrayList<>();
         
         for (ImageSource image : imageList) {
-            if (!new File(image.getSource()).exists()) {
+            if (!image.getSourceFile().exists() && !image.getEncodedFile().exists()) {
                 deleted.add(image);
             }
         }
