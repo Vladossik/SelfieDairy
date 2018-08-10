@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -15,7 +16,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
@@ -23,7 +26,6 @@ import com.vlada.selfie_app.adapter.ImageListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,10 +40,19 @@ public class DiaryActivity extends AppCompatActivity {
     
     private Diary diary;
     
+    private HandlerThread imageLoadingThread;
+    private Handler imageLoadingHandler;
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
+        
+        imageLoadingThread = new HandlerThread("loading");
+        imageLoadingThread.start();
+        imageLoadingHandler = new Handler(imageLoadingThread.getLooper());
+        
         
         // get diary from previous activity
         diary = (Diary) getIntent().getSerializableExtra("diary");
@@ -88,6 +99,14 @@ public class DiaryActivity extends AppCompatActivity {
                 startActivityForResult(intent, ADD_PHOTO_REQUEST);
             }
         });
+    }
+    
+    @Override
+    protected void onDestroy() {
+        imageLoadingThread.quit();
+        if (ImageLoading.clearImageCache())
+            Toast.makeText(this, "All cached images are destroyed", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
     }
     
     List<ImageSource> findDeletedImages(List<ImageSource> imageList) {
@@ -167,5 +186,9 @@ public class DiaryActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+    
+    public Handler getImageLoadingHandler() {
+        return imageLoadingHandler;
     }
 }

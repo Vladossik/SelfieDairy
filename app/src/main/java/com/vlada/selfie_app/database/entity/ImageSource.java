@@ -3,7 +3,6 @@ package com.vlada.selfie_app.database.entity;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.vlada.selfie_app.FileUtils;
@@ -121,7 +120,7 @@ public class ImageSource implements Serializable {
     
     @Ignore
     public File getCachedFile() {
-        File cacheFolder = FileUtils.getCacheFolder();
+        File cacheFolder = FileUtils.getImageCacheFolder();
         cacheFolder.mkdirs();
         return new File(cacheFolder, "cached_" + getSourceFile().getName());
     }

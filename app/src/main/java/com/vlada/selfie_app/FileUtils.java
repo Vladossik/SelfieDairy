@@ -53,41 +53,6 @@ public class FileUtils {
     }
     
     
-    /**
-     * Checks three folders: default image folder, encrypted image folder, cached image folder.
-     * And tries to find a decrypted image or create it in cache folder.
-     */
-    @Nullable
-    public static File getDecodedImage(Context context, ImageSource imageSource) {
-        File sourceFile = imageSource.getSourceFile();
-        File encodedFile = imageSource.getEncodedFile();
-        File cachedFile = imageSource.getCachedFile();
-        
-        if (sourceFile.exists()) {
-            Log.d("my_tag", "getDecodedImage: found source file");
-            return sourceFile;
-        }
-        
-        if (cachedFile.exists()) {
-            Log.d("my_tag", "getDecodedImage: found cached file");
-            return cachedFile;
-        }
-        
-        if (!encodedFile.exists()) {
-            Log.d("my_tag", "getDecodedImage: didn't find any file, returned null");
-            return null;
-        }
-        
-        try {
-            Encryption.decryptFile(context, encodedFile, cachedFile);
-            return cachedFile;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    
     public static Intent createCameraIntent(Context context, File fileToSave) {
         File folder = fileToSave.getParentFile();
         if (folder != null)
@@ -116,7 +81,7 @@ public class FileUtils {
     }
     
     
-    public static File getCacheFolder() {
+    public static File getImageCacheFolder() {
         return new File(getImageFolder(), "cache");
     }
     

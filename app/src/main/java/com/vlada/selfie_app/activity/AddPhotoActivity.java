@@ -12,7 +12,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,6 +24,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.Encryption;
 import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.database.Repository;
@@ -32,7 +32,6 @@ import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -284,7 +283,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         if (imageSource == null)
             return;
         
-        File imageFile = FileUtils.getDecodedImage(this, imageSource);
+        File imageFile = ImageLoading.getDecodedImage(this, imageSource);
         
         if (imageFile == null) {
             Toast.makeText(this, "Error while loading image", Toast.LENGTH_SHORT).show();

@@ -1,8 +1,8 @@
 package com.vlada.selfie_app.adapter;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -17,20 +17,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.exception.KeyChainException;
-import com.squareup.picasso.Picasso;
-import com.vlada.selfie_app.Encryption;
 import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.DiaryActivity;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -68,6 +62,11 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         this.activity = activity;
     }
     
+    
+    private Handler getImageLoadingHandler() {
+        return activity.getImageLoadingHandler();
+    }
+    
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -76,25 +75,34 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
     }
     
     @Override
-    public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ImageViewHolder holder, final int position) {
         if (images != null) {
-            ImageSource imageSource = images.get(position);
+            final ImageSource imageSource = images.get(position);
             
             holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(imageSource.getDateOfCreate().getTime()));
             Log.d("my_tag", "onBindViewHolder-" + position + ": received path: " + imageSource.getSource());
             
-            File imageFile = FileUtils.getDecodedImage(activity, imageSource);
             
-            // loading image in imageView from file
-            if (imageFile != null) {
-                Picasso.get()
-                        .load(imageFile)
-                        .placeholder(R.drawable.add_photo)
-                        .resize(800, 800)
-                        .onlyScaleDown()
-                        .centerInside()
-                        .into(holder.imageView);
+            if (imageSource.isEncrypted()) {
+                // start image loading in other thread
+                getImageLoadingHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // encoding or just picking from cache or default directory
+                        final File imageFile = ImageLoading.getDecodedImage(activity, imageSource);
+                        // returning back to main thread
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageLoading.loadImageInView(imageFile, holder.imageView);
+                            }
+                        });
+                    }
+                });
+            } else { // if image is not encrypted - load file and launch picasso in main thread
+                final File imageFile = ImageLoading.getDecodedImage(activity, imageSource);
+                ImageLoading.loadImageInView(imageFile, holder.imageView);
             }
             
             // setup visibility for empty description
