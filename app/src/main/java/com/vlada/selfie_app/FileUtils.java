@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 
 public class FileUtils {
     private FileUtils() {
@@ -89,8 +90,9 @@ public class FileUtils {
      * Creates a jpg file in folder with identical name to store selfie.
      */
     public static File createImageInFolder(File folder) {
-        return new File(folder, "selfie_" +
-                String.valueOf(System.currentTimeMillis()) + ".jpg");
+        return new File(folder, "selfie_"
+                + new SimpleDateFormat("yyyyMMddHHmmssSSS")
+                .format(System.currentTimeMillis()) + ".jpg");
     }
     
     
