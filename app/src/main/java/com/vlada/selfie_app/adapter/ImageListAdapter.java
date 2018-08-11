@@ -62,7 +62,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         this.activity = activity;
     }
     
-    
+    /**
+     * Handler, bound to async looper thread for background image downloading
+     */
     private Handler getImageLoadingHandler() {
         return activity.getImageLoadingHandler();
     }
@@ -149,31 +151,47 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         String[] items = new String[]{"Delete file with image"};
         final boolean[] checkedItems = new boolean[]{false};
         
-        new AlertDialog.Builder(activity)
+        final boolean hasImageSource = image.getSourceFile().exists();
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        
+        // ask to delete source file, using check box. (if we have anything to delete)
+        if (hasImageSource) {
+            builder.setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    checkedItems[which] = isChecked;
+                }
+            });
+        }
+        
+        builder
                 .setTitle("Delete image")
                 .setNegativeButton("Cancel", null)
-                .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        checkedItems[which] = isChecked;
-                    }
-                })
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (checkedItems[0]) {
-                            // delete file as well
-                            File file = new File(image.getSource());
-                            if (FileUtils.deleteImageIfExists(file)) {
-                                Log.d("my_tag", "showImageDeletionDialog: deleted file as well");
-                                Toast.makeText(activity, "File was deleted", Toast.LENGTH_SHORT).show();
-                                FileUtils.scanGalleryForImage(activity, file);
-                            }
-                        }
-                        
                         // just delete image from path
                         viewModel.getRepo().deleteImage(image);
                         Log.d("my_tag", "showImageDeletionDialog: deleted image from db");
+                        
+                        // trying to delete encoded source and cached file
+                        FileUtils.deleteImageIfExists(image.getEncodedFile());
+                        FileUtils.deleteImageIfExists(image.getCachedFile());
+                        
+                        if (hasImageSource && checkedItems[0]) {
+                            // delete primary source file as well
+                            File sourceFile = image.getSourceFile();
+                            if (FileUtils.deleteImageIfExists(sourceFile)) {
+                                Log.d("my_tag", "showImageDeletionDialog: deleted source file as well");
+                                Toast.makeText(activity, "File was deleted", Toast.LENGTH_SHORT).show();
+                                FileUtils.scanGalleryForImage(activity, sourceFile);
+                            } else {
+                                Toast.makeText(activity, "Failed file deleting.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        
+                        
                     }
                 })
                 .create()

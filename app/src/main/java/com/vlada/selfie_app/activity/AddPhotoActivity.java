@@ -117,6 +117,8 @@ public class AddPhotoActivity extends AppCompatActivity {
             tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                     .format(Calendar.getInstance().getTime()));
             
+            showChooseImageDialog();
+            
         }
         
         
