@@ -3,6 +3,7 @@ package com.vlada.selfie_app;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
@@ -11,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -42,7 +45,7 @@ public class EncryptionTest {
     }
     
     @Test
-    public void encryptTextFile() throws IOException, KeyChainException, CryptoInitializationException {
+    public void encryptTextFile() throws Exception {
         File inputFile = new File(folder, "test_text.txt");
         
         final String sourceText = "Hello world!";
@@ -72,31 +75,50 @@ public class EncryptionTest {
     }
     
     @Test
-    public void encryptionWithReplacement() throws IOException, KeyChainException, CryptoInitializationException {
+    public void encryptionWithReplacement() throws Exception {
         
         File replacedFile = new File(folder, "replaced_text.txt");
-    
+        
         final String sourceText = "Hello world from Africa!";
-    
+        
         FileUtils.writeTextFile(sourceText, replacedFile);
-    
-        assertTrue(replacedFile.exists());
-    
-    
-    
-        Encryption.encryptFile(context, replacedFile, replacedFile);
-    
+        
         assertTrue(replacedFile.exists());
         
-    
-        Encryption.decryptFile(context, replacedFile, replacedFile);
-    
+        Encryption.encryptFile(context, replacedFile, replacedFile);
+        
         assertTrue(replacedFile.exists());
-    
+        
+        
+        Encryption.decryptFile(context, replacedFile, replacedFile);
+        
+        assertTrue(replacedFile.exists());
+        
         String encryptedText = FileUtils.readTextFile(replacedFile);
         
         assertEquals(sourceText, encryptedText);
+    }
+    
+    
+    @Test
+    public void encryptString() throws Exception {
+        String sourceStr = "Hello World from America!";
+    
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         
+        Encryption.encryptBytes(context, sourceStr.getBytes(), outputStream);
         
+        byte[] encodedBytes = outputStream.toByteArray();
+    
+        Log.d("my_tag", "encryptString: encoded str: " + new String(encodedBytes));
+        
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(encodedBytes);
+        
+        byte[] decodedBytes = Encryption.decryptToBytes(context, inputStream);
+        
+        String decodedStr = new String(decodedBytes);
+        Log.d("my_tag", "encryptString: decoded str: " + decodedStr);
+    
+        assertEquals(sourceStr, decodedStr);
     }
 }
