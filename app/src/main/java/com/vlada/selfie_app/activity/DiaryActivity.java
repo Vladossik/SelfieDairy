@@ -104,7 +104,7 @@ public class DiaryActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         imageLoadingThread.quit();
-        if (ImageLoading.clearImageCache())
+        if (ImageLoading.clearImageCache(this))
             Toast.makeText(this, "All cached images are destroyed", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }

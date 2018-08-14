@@ -24,7 +24,7 @@ public class ImageLoading {
     public static File getDecodedImage(Context context, ImageSource imageSource) {
         File sourceFile = imageSource.getSourceFile();
         File encodedFile = imageSource.getEncodedFile();
-        File cachedFile = imageSource.getCachedFile();
+        File cachedFile = imageSource.getCachedFile(context);
         
         if (sourceFile.exists()) {
             Log.d("my_tag", "getDecodedImage: found source file");
@@ -50,8 +50,8 @@ public class ImageLoading {
         }
     }
     
-    public static boolean clearImageCache() {
-        File cacheFolder = FileUtils.getImageCacheFolder();
+    public static boolean clearImageCache(Context context) {
+        File cacheFolder = FileUtils.getImageCacheFolder(context);
         File[] images = cacheFolder.listFiles();
         int counter = 0;
         for (File image : images) {

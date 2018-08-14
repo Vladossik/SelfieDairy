@@ -177,7 +177,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                         
                         // trying to delete encoded source and cached file
                         FileUtils.deleteImageIfExists(image.getEncodedFile());
-                        FileUtils.deleteImageIfExists(image.getCachedFile());
+                        FileUtils.deleteImageIfExists(image.getCachedFile(activity));
                         
                         if (hasImageSource && checkedItems[0]) {
                             // delete primary source file as well
