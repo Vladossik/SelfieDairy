@@ -1,6 +1,7 @@
 package com.vlada.selfie_app.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.vlada.selfie_app.EncryptionProgressAsyncTask;
 import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
@@ -27,6 +29,7 @@ import com.vlada.selfie_app.adapter.ViewPagerAdapter;
 
 import java.util.List;
 
+/** Activity with all diaries*/
 public class MainActivity extends FragmentActivity {
     
     public static final int CREATE_DIARY_REQUEST = 1;
@@ -140,8 +143,28 @@ public class MainActivity extends FragmentActivity {
             if (resultCode == RESULT_OK) {
                 Diary diary = (Diary) data.getSerializableExtra("diary");
                 viewModel.getRepo().updateDiary(diary);
+                
+                if (data.getBooleanExtra("privacyChanged", false)) {
+                    showEncryptionDialog(diary);
+                }
+                
+                
             }
         }
+    }
+    
+    private void showEncryptionDialog(Diary diary) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        
+        if (diary.isPrivate()) {
+            progressDialog.setMessage("Diary encryption");
+        } else {
+            progressDialog.setMessage("Diary decryption");
+        }
+        
+        EncryptionProgressAsyncTask asyncTask = new EncryptionProgressAsyncTask(progressDialog, viewModel.getRepo(), diary, this);
+        asyncTask.execute();
     }
     
     

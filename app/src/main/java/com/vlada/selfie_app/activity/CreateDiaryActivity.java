@@ -1,6 +1,7 @@
 package com.vlada.selfie_app.activity;
 
 import android.app.TimePickerDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -20,12 +21,16 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.vlada.selfie_app.Encryption;
+import com.vlada.selfie_app.EncryptionProgressAsyncTask;
 import com.vlada.selfie_app.R;
+import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.enums.RemindFrequency;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
 
 public class CreateDiaryActivity extends AppCompatActivity {
     
@@ -138,9 +143,12 @@ public class CreateDiaryActivity extends AppCompatActivity {
         diary.setRemindFrequency(RemindFrequency.values()[selectedFrequency]);
         // Reminder time is updated in time picker handler
         
-        diary.setPrivate(swchPrivate.isChecked());
-        
         Intent intent = new Intent();
+    
+        if (diary.isPrivate() != swchPrivate.isChecked()) {
+            intent.putExtra("privacyChanged", true);
+        }
+        diary.setPrivate(swchPrivate.isChecked());
         
         intent.putExtra("diary", (Serializable) diary);
         setResult(RESULT_OK, intent);

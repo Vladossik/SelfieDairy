@@ -119,17 +119,13 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                     public void onClick(DialogInterface dlg, int position) {
                         switch (position) {
                             case 0:
-                                Toast.makeText(context, "Edition", Toast.LENGTH_SHORT).show();
                                 activity.openActivityForEditing(diary);
                                 break;
                             case 1:
-                                Toast.makeText(context, "Setting diary as " + doneOrWaiting, Toast.LENGTH_SHORT).show();
                                 diary.setDone(!diary.isDone());
-                                
                                 viewModel.getRepo().updateDiary(diary);
                                 break;
                             case 2:
-                                Toast.makeText(context, "Removing diary", Toast.LENGTH_SHORT).show();
                                 viewModel.getRepo().deleteDiary(diary);
                                 break;
                         }

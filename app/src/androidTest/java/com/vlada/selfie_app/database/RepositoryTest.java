@@ -130,6 +130,8 @@ public class RepositoryTest {
     public void replaceImageSourceIdTest() throws Exception {
         // LiveDataTestUtil.getValue doesn't work in UIThreadTest for some reason!!!
         
+        // TODO remake test without callbacks and ui thread
+        
         final Diary d1 = new Diary("d1");
         insertDiaryAndUpdateId(d1);
         
@@ -148,16 +150,16 @@ public class RepositoryTest {
             @Override
             public void onResult(boolean result) {
                 assertEquals(true, result);
-    
+                
                 List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
                 assertEquals(2, allImages.size());
-    
+                
                 List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src3", d1.getId());
-    
+                
                 assertEquals(1, filtered.size());
                 assertEquals("hello1", filtered.get(0).getDescription());
-    
-    
+                
+                
                 // trying to replace img1 source from src3 to src2
                 // should return false and do not replace anything
                 
@@ -168,9 +170,9 @@ public class RepositoryTest {
                         // nothing should be replaced
                         List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
                         assertEquals(2, allImages.size());
-    
+                        
                         List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src2", d1.getId());
-    
+                        
                         assertEquals(1, filtered.size());
                         // description from old image
                         assertEquals("hello2", filtered.get(0).getDescription());

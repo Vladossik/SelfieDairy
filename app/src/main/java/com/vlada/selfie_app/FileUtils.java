@@ -90,6 +90,7 @@ public class FileUtils {
      * Creates a jpg file in folder with identical name to store selfie.
      */
     public static File createImageInFolder(File folder) {
+        folder.mkdirs();
         return new File(folder, "selfie_"
                 + new SimpleDateFormat("yyyyMMddHHmmssSSS")
                 .format(System.currentTimeMillis()) + ".jpg");

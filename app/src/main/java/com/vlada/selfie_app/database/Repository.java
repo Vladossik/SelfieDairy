@@ -180,33 +180,17 @@ public class Repository {
      * returns true in callback if image with new source does not exists and insertion was successful.
      * Callback will be returned in UI thread.
      */
-    public void replaceImageSourceId(final ImageSource imageSource, final String newSource, @Nullable final BooleanCallback resultCallback) {
-        final Handler handler = new Handler();
+    public boolean replaceImageSourceId(final ImageSource imageSource, final String newSource) {
         
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                
-                imageSourceDao.delete(imageSource);
-                imageSource.setSource(newSource);
-                
-                final List<ImageSource> found = imageSourceDao.findByKeys(newSource, imageSource.getDiaryId());
-                final boolean result;
-                if (found.size() > 0) {
-                    result = false;
-                } else {
-                    imageSourceDao.insert(imageSource);
-                    result = true;
-                }
-                if (resultCallback != null) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            resultCallback.onResult(result);
-                        }
-                    });
-                }
-            }
-        }).start();
+        imageSourceDao.delete(imageSource);
+        imageSource.setSource(newSource);
+        
+        final List<ImageSource> found = imageSourceDao.findByKeys(newSource, imageSource.getDiaryId());
+        if (found.size() > 0) {
+            return false;
+        } else {
+            imageSourceDao.insert(imageSource);
+            return true;
+        }
     }
 }
