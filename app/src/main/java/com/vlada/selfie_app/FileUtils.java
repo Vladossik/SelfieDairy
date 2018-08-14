@@ -83,6 +83,7 @@ public class FileUtils {
     
     
     public static File getImageCacheFolder() {
+        // TODO: 14.08.2018 Change to getCacheDir()/images 
         return new File(getImageFolder(), "cache");
     }
     

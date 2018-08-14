@@ -72,7 +72,6 @@ public class EncryptionProgressAsyncTask extends AsyncTask<Void, Integer, Void> 
             boolean result = repository.replaceImageSourceId(imageSource, newSource);
             
             // we can not update image for some reason, so just do nothing
-            // even don't change image isEncrypted field in db
             if (!result) {
                 // ???????? what to do?
                 Toast.makeText(context, "Failed to change image source to\n" + newSource, Toast.LENGTH_LONG).show();

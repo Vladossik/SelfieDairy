@@ -126,59 +126,49 @@ public class RepositoryTest {
     }
     
     @Test
-    @UiThreadTest
     public void replaceImageSourceIdTest() throws Exception {
         // LiveDataTestUtil.getValue doesn't work in UIThreadTest for some reason!!!
-        
-        // TODO remake test without callbacks and ui thread
         
         final Diary d1 = new Diary("d1");
         insertDiaryAndUpdateId(d1);
         
-        final ImageSource img1 = new ImageSource("src1", d1.getId(), "hello1");
+        ImageSource img1 = new ImageSource("src1", d1.getId(), "hello1");
         ImageSource img2 = new ImageSource("src2", d1.getId(), "hello2");
         
         repo.insertImage(img1, img2);
         Thread.sleep(100);
         
-        final List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+        List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
         
         assertEquals(2, allImages.size());
         
         // replace img1 source from src1 to src3
-        repo.replaceImageSourceId(img1, "src3", new Repository.BooleanCallback() {
-            @Override
-            public void onResult(boolean result) {
-                assertEquals(true, result);
-                
-                List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
-                assertEquals(2, allImages.size());
-                
-                List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src3", d1.getId());
-                
-                assertEquals(1, filtered.size());
-                assertEquals("hello1", filtered.get(0).getDescription());
-                
-                
-                // trying to replace img1 source from src3 to src2
-                // should return false and do not replace anything
-                
-                repo.replaceImageSourceId(img1, "src2", new Repository.BooleanCallback() {
-                    @Override
-                    public void onResult(boolean result) {
-                        assertEquals(false, result);
-                        // nothing should be replaced
-                        List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
-                        assertEquals(2, allImages.size());
-                        
-                        List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src2", d1.getId());
-                        
-                        assertEquals(1, filtered.size());
-                        // description from old image
-                        assertEquals("hello2", filtered.get(0).getDescription());
-                    }
-                });
-            }
-        });
+        boolean result = repo.replaceImageSourceId(img1, "src3");
+        
+        assertEquals(true, result);
+        
+        allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+        assertEquals(2, allImages.size());
+        
+        List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src3", d1.getId());
+        
+        assertEquals(1, filtered.size());
+        assertEquals("hello1", filtered.get(0).getDescription());
+        
+        
+        // trying to replace img1 source from src3 to src2
+        // should return false and do not replace anything
+        
+        result = repo.replaceImageSourceId(img1, "src2");
+        assertEquals(false, result);
+        // nothing should be replaced
+        allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+        assertEquals(2, allImages.size());
+        
+        filtered = repo.getDatabase().imageSourceDao().findByKeys("src2", d1.getId());
+        
+        assertEquals(1, filtered.size());
+        // description from old image
+        assertEquals("hello2", filtered.get(0).getDescription());
     }
 }

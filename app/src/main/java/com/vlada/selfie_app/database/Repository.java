@@ -177,20 +177,23 @@ public class Repository {
     }
     
     /**
-     * returns true in callback if image with new source does not exists and insertion was successful.
-     * Callback will be returned in UI thread.
+     * Changes source field for imageSource in database by deleting old entity
+     * and inserting new one with updated source.
+     * WARNING: works in the same thread as called. Can not be called from ui thread!
+     * returns true if image with new source does not exists and insertion was successful.
      */
     public boolean replaceImageSourceId(final ImageSource imageSource, final String newSource) {
+        
+        // trying to find existing image with newSource
+        final List<ImageSource> found = imageSourceDao.findByKeys(newSource, imageSource.getDiaryId());
+        if (found.size() > 0) {
+            return false;
+        }
         
         imageSourceDao.delete(imageSource);
         imageSource.setSource(newSource);
         
-        final List<ImageSource> found = imageSourceDao.findByKeys(newSource, imageSource.getDiaryId());
-        if (found.size() > 0) {
-            return false;
-        } else {
-            imageSourceDao.insert(imageSource);
-            return true;
-        }
+        imageSourceDao.insert(imageSource);
+        return true;
     }
 }
