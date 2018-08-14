@@ -3,6 +3,7 @@ package com.vlada.selfie_app.database;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 
 import com.vlada.selfie_app.database.dao.DiaryDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
@@ -114,7 +115,9 @@ public class Repository {
         }).start();
     }
     
-    /** In separate deletes one image by source and diary id.*/
+    /**
+     * In separate deletes one image by source and diary id.
+     */
     public void deleteImageByKeys(final String imageSrc, final int diaryId) {
         new Thread(new Runnable() {
             @Override
@@ -124,7 +127,9 @@ public class Repository {
         }).start();
     }
     
-    /** In separate deletes images.*/
+    /**
+     * In separate deletes images.
+     */
     public void deleteImage(final ImageSource... images) {
         new Thread(new Runnable() {
             @Override
@@ -134,7 +139,9 @@ public class Repository {
         }).start();
     }
     
-    /** In separate thread updates image.*/
+    /**
+     * In separate thread updates image.
+     */
     public void updateImage(final ImageSource imageSource) {
         new Thread(new Runnable() {
             @Override
@@ -148,7 +155,9 @@ public class Repository {
         void onResult(boolean result);
     }
     
-    /** In other thread tries to find image and returns result in callback in ui thread.*/
+    /**
+     * In other thread tries to find image and returns result in callback in ui thread.
+     */
     public void checkIfImageExists(final String source, final int diaryId, final BooleanCallback callback) {
         final Handler handler = new Handler();
         
@@ -163,6 +172,40 @@ public class Repository {
                         callback.onResult(found.size() > 0);
                     }
                 });
+            }
+        }).start();
+    }
+    
+    /**
+     * returns true in callback if image with new source does not exists and insertion was successful.
+     * Callback will be returned in UI thread.
+     */
+    public void replaceImageSourceId(final ImageSource imageSource, final String newSource, @Nullable final BooleanCallback resultCallback) {
+        final Handler handler = new Handler();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+                imageSourceDao.delete(imageSource);
+                imageSource.setSource(newSource);
+                
+                final List<ImageSource> found = imageSourceDao.findByKeys(newSource, imageSource.getDiaryId());
+                final boolean result;
+                if (found.size() > 0) {
+                    result = false;
+                } else {
+                    imageSourceDao.insert(imageSource);
+                    result = true;
+                }
+                if (resultCallback != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            resultCallback.onResult(result);
+                        }
+                    });
+                }
             }
         }).start();
     }

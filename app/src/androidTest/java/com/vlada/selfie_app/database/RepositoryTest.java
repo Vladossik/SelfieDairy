@@ -3,6 +3,7 @@ package com.vlada.selfie_app.database;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.annotation.UiThreadTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.vlada.selfie_app.database.entity.Diary;
@@ -57,7 +58,9 @@ public class RepositoryTest {
         imageSource.getDateOfCreate().add(Calendar.HOUR, amount);
     }
     
-    /** We insert in current thread avoid using repo and update id*/
+    /**
+     * We insert in current thread avoid using repo and update id
+     */
     void insertDiaryAndUpdateId(Diary diary) {
         // insert in this thread not using repo
         int newId = (int) repo.getDatabase().diaryDao().insert(diary);
@@ -115,10 +118,65 @@ public class RepositoryTest {
         fromD1 = LiveDataTestUtil.getValue(repo.getAllImagesForDiary(d1.getId()));
         fromD2 = LiveDataTestUtil.getValue(repo.getAllImagesForDiary(d2.getId()));
         fromD3 = LiveDataTestUtil.getValue(repo.getAllImagesForDiary(d3.getId()));
-    
+        
         assertEquals(0, fromD1.size());
         assertEquals(1, fromD2.size());
         assertEquals(2, fromD3.size());
         
+    }
+    
+    @Test
+    @UiThreadTest
+    public void replaceImageSourceIdTest() throws Exception {
+        // LiveDataTestUtil.getValue doesn't work in UIThreadTest for some reason!!!
+        
+        final Diary d1 = new Diary("d1");
+        insertDiaryAndUpdateId(d1);
+        
+        final ImageSource img1 = new ImageSource("src1", d1.getId(), "hello1");
+        ImageSource img2 = new ImageSource("src2", d1.getId(), "hello2");
+        
+        repo.insertImage(img1, img2);
+        Thread.sleep(100);
+        
+        final List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+        
+        assertEquals(2, allImages.size());
+        
+        // replace img1 source from src1 to src3
+        repo.replaceImageSourceId(img1, "src3", new Repository.BooleanCallback() {
+            @Override
+            public void onResult(boolean result) {
+                assertEquals(true, result);
+    
+                List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+                assertEquals(2, allImages.size());
+    
+                List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src3", d1.getId());
+    
+                assertEquals(1, filtered.size());
+                assertEquals("hello1", filtered.get(0).getDescription());
+    
+    
+                // trying to replace img1 source from src3 to src2
+                // should return false and do not replace anything
+                
+                repo.replaceImageSourceId(img1, "src2", new Repository.BooleanCallback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        assertEquals(false, result);
+                        // nothing should be replaced
+                        List<ImageSource> allImages = repo.getDatabase().imageSourceDao().getImagesForDiary(d1.getId());
+                        assertEquals(2, allImages.size());
+    
+                        List<ImageSource> filtered = repo.getDatabase().imageSourceDao().findByKeys("src2", d1.getId());
+    
+                        assertEquals(1, filtered.size());
+                        // description from old image
+                        assertEquals("hello2", filtered.get(0).getDescription());
+                    }
+                });
+            }
+        });
     }
 }

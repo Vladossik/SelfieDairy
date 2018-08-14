@@ -75,6 +75,9 @@ public class ImageSource implements Serializable {
         return source;
     }
     
+    public void setSource(@NonNull String source) {
+        this.source = source;
+    }
     @NonNull
     public Calendar getDateOfCreate() {
         return dateOfCreate;
