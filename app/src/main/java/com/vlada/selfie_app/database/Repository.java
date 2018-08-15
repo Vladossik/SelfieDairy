@@ -1,10 +1,15 @@
 package com.vlada.selfie_app.database;
 
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
+import com.vlada.selfie_app.Encryption;
+import com.vlada.selfie_app.FileUtils;
 import com.vlada.selfie_app.database.dao.DiaryDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
@@ -195,5 +200,111 @@ public class Repository {
         
         imageSourceDao.insert(imageSource);
         return true;
+    }
+    
+    
+    public void encryptWholeDiary(final Context context, final Diary diary) {
+        // setup progressDialog
+        final ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        if (diary.isPrivate()) {
+            progressDialog.setMessage("Diary encryption");
+        } else {
+            progressDialog.setMessage("Diary decryption");
+        }
+        progressDialog.show();
+        
+        // Start background task in new thread
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<ImageSource> images = imageSourceDao.getImagesForDiary(diary.getId());
+                
+                progressDialog.setMax(images.size());
+                int i = 0;
+                for (ImageSource imageSource : images) {
+                    progressDialog.setProgress(i);
+                    i++;
+        
+                    if (imageSource.isEncrypted() == diary.isPrivate())
+                        continue;
+        
+                    if (imageSource.isEncrypted()) {
+                        decryptImage(imageSource);
+                    } else {
+                        encryptImage(imageSource);
+                    }
+                }
+                
+                progressDialog.dismiss();
+            }
+    
+            private void decryptImage(ImageSource imageSource) {
+                // decrypting
+                imageSource.setEncrypted(false);
+                imageSourceDao.update(imageSource);
+        
+                // source of decrypted image already exists, so we can just delete encoded file
+                if (imageSource.getSourceFile().exists()) {
+                    // delete encoded image
+                    FileUtils.deleteImageIfExists(imageSource.getEncodedFile());
+                    return;
+                }
+        
+                // if we can not write decoded image to default path
+                if (!imageSource.getSourceFile().canWrite()) {
+                    // update source as default location for created in this app images.
+                    String newSource = FileUtils.createImageInFolder(FileUtils.getImageFolder()).getAbsolutePath();
+                    boolean result = Repository.this.replaceImageSourceId(imageSource, newSource);
+            
+                    // we can not update image for some reason, so just do nothing
+                    if (!result) {
+                        // ???????? what to do?
+                        Toast.makeText(context, "Failed to change image source to\n" + newSource, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+        
+                // we have default image source where we can write decrypted file
+        
+                try {
+                    Encryption.decryptFile(context, imageSource.getEncodedFile(), imageSource.getSourceFile());
+                    FileUtils.scanGalleryForImage(context, imageSource.getSourceFile());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                FileUtils.deleteImageIfExists(imageSource.getEncodedFile());
+            }
+    
+            private void encryptImage(ImageSource imageSource) {
+                // encrypting
+                imageSource.setEncrypted(true);
+                imageSourceDao.update(imageSource);
+        
+                if (imageSource.getEncodedFile().exists()) {
+                    return;
+                }
+        
+                if (!imageSource.getSourceFile().exists()) {
+                    return;
+                }
+        
+                try {
+                    Encryption.encryptFile(context, imageSource.getSourceFile(), imageSource.getEncodedFile());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+        
+                if (imageSource.getSourceFile().getParentFile().getAbsolutePath()
+                        .equals(FileUtils.getImageFolder().getAbsolutePath())) {
+            
+                    // delete source file only if it was stored in our default app folder.
+                    FileUtils.deleteImageIfExists(imageSource.getSourceFile());
+                    FileUtils.scanGalleryForImage(context, imageSource.getSourceFile());
+                }
+            }
+        }).start();
     }
 }

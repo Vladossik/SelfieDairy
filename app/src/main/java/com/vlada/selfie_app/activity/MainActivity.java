@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.vlada.selfie_app.EncryptionProgressAsyncTask;
 import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
@@ -154,17 +153,8 @@ public class MainActivity extends FragmentActivity {
     }
     
     private void showEncryptionDialog(Diary diary) {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         
-        if (diary.isPrivate()) {
-            progressDialog.setMessage("Diary encryption");
-        } else {
-            progressDialog.setMessage("Diary decryption");
-        }
-        
-        EncryptionProgressAsyncTask asyncTask = new EncryptionProgressAsyncTask(progressDialog, viewModel.getRepo(), diary, this);
-        asyncTask.execute();
+        viewModel.getRepo().encryptWholeDiary(this, diary);
     }
     
     
