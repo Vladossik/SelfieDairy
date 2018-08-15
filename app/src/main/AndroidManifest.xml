@@ -25,8 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.CreatePasswordActivity"/>
-        <activity android:name=".activity.EnterPasswordActivity"/>
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"/>

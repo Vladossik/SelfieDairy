@@ -22,13 +22,16 @@ import com.vlada.selfie_app.Utils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
+import com.vlada.selfie_app.dialog.EnterPasswordDialog;
 import com.vlada.selfie_app.fragment.DiaryListFragment;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.adapter.ViewPagerAdapter;
 
 import java.util.List;
 
-/** Activity with all diaries*/
+/**
+ * Activity with all diaries
+ */
 public class MainActivity extends FragmentActivity {
     
     public static final int CREATE_DIARY_REQUEST = 1;
@@ -116,7 +119,6 @@ public class MainActivity extends FragmentActivity {
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         }
-        
     }
     
     @Override
@@ -168,8 +170,18 @@ public class MainActivity extends FragmentActivity {
     }
     
     public void openDiaryActivity(Diary diary) {
-        Intent intent = new Intent(this, DiaryActivity.class);
+        final Intent intent = new Intent(this, DiaryActivity.class);
         intent.putExtra("diary", diary);
-        startActivity(intent);
+        
+        if (diary.isPrivate()) {
+            new EnterPasswordDialog(this, new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(intent);
+                }
+            }).show();
+        } else {
+            startActivity(intent);
+        }
     }
 }
