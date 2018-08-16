@@ -37,7 +37,11 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".activity.DiaryActivity"
-            android:parentActivityName=".activity.MainActivity"/>
+            android:parentActivityName=".activity.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
+        </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.vlada.selfie_app.fileprovider"

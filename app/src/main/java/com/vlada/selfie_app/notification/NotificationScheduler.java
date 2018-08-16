@@ -59,30 +59,6 @@ public class NotificationScheduler extends BroadcastReceiver {
         
     }
     
-    private static Calendar getNextAlarmTime(Diary diary) {
-        Calendar calendar = Calendar.getInstance();
-        long interval = diary.getRemindFrequency().timeInMillis;
-        
-        if (interval < AlarmManager.INTERVAL_DAY) {
-            // interval is less then one day, so we just add it to current time
-            calendar.add(Calendar.MILLISECOND, (int) diary.getRemindFrequency().timeInMillis);
-        } else {
-            // interval is more then one day, 
-            // so we should use reminder time
-            calendar.set(Calendar.HOUR_OF_DAY, diary.getReminder().get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, diary.getReminder().get(Calendar.MINUTE));
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            // if reminder time is before or very close to the current time,
-            // jump over to the next calling time 
-            if (calendar.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis() + 100) {
-                calendar.setTimeInMillis(calendar.getTimeInMillis() + interval);
-            }
-        }
-        return calendar;
-    }
-    
-    
     public static void scheduleRemainder(Context context, Diary diary) {
         
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -100,10 +76,31 @@ public class NotificationScheduler extends BroadcastReceiver {
             Log.d("my_tag", "scheduleRemainder: scheduled alarm at " + new SimpleDateFormat("dd.MM.yyyy : HH.mm.ss.SSS")
                     .format(callTime.getTime()) + " for diary: " + diary.getName());
             
-            
-            
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, callTime.getTimeInMillis(), pendingIntent);
         }
+    }
+    
+    private static Calendar getNextAlarmTime(Diary diary) {
+        Calendar calendar = Calendar.getInstance();
+        long interval = diary.getRemindFrequency().timeInMillis;
+        
+        if (interval < AlarmManager.INTERVAL_DAY) {
+            // interval is less then one day, so we just add it to current time
+            calendar.add(Calendar.MILLISECOND, (int) interval);
+        } else {
+            // interval is more then one day, 
+            // so we should use reminder time
+            calendar.set(Calendar.HOUR_OF_DAY, diary.getReminder().get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, diary.getReminder().get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            // if reminder time is before or very close to the current time,
+            // jump over to the next calling time 
+            if (calendar.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis() + 100) {
+                calendar.setTimeInMillis(calendar.getTimeInMillis() + interval);
+            }
+        }
+        return calendar;
     }
     
     /**

@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.activity.DiaryActivity;
+import com.vlada.selfie_app.activity.MainActivity;
 import com.vlada.selfie_app.database.entity.Diary;
 
 public class NotificationPublisher {
@@ -25,13 +27,23 @@ public class NotificationPublisher {
         
         Intent intent = new Intent(context, DiaryActivity.class);
         intent.putExtra("diary", diary);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, diary.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Creating pending intent with back stack
+        
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // Adds the back stack
+        stackBuilder.addParentStack(DiaryActivity.class);
+        // Adds the Intent to the top of the stack
+        stackBuilder.addNextIntent(intent);
+        // Gets a PendingIntent containing the entire back stack
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(diary.getId(), PendingIntent.FLAG_UPDATE_CURRENT);
+        
         
         Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("SelfieDiary")
-                .setContentText("add photo to diary: " + diary.getName())
+                .setContentText("add photo to diary " + diary.getName())
                 .setAutoCancel(true)
                 .setSmallIcon(R.drawable.camera)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
