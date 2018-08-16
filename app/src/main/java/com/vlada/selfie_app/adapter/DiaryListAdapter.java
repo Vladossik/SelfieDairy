@@ -2,7 +2,6 @@ package com.vlada.selfie_app.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -10,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +19,13 @@ import android.widget.Toast;
 
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
-import com.vlada.selfie_app.activity.DiaryActivity;
 import com.vlada.selfie_app.activity.MainActivity;
+import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
+import com.vlada.selfie_app.database.entity.ImageSource;
+import com.vlada.selfie_app.utils.FileUtils;
 
+import java.io.File;
 import java.util.List;
 
 import static android.content.Context.VIBRATOR_SERVICE;
@@ -126,7 +129,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                                 viewModel.getRepo().updateDiary(diary);
                                 break;
                             case 2:
-                                viewModel.getRepo().deleteDiary(diary);
+                                showDeleteDiaryDialog(diary);
                                 break;
                         }
                         
@@ -136,7 +139,77 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                 .show();
     }
     
-    /** Updates diaries in rv, using diffUtil*/
+    private void showDeleteDiaryDialog(final Diary diary) {
+        String[] items = new String[]{"Delete all image files"};
+        final boolean[] checkedItems = new boolean[]{false};
+        
+        new AlertDialog.Builder(activity)
+                .setTitle("Removing " + diary.getName())
+                .setMessage("Are you sure?")
+                .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedItems[which] = isChecked;
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteDiary(diary, checkedItems[0]);
+                    }
+                })
+                .create()
+                .show();
+    }
+    
+    
+    private void deleteDiary(final Diary diary, final boolean deleteSourceFiles) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+                ImageSourceDao imageSourceDao = viewModel.getRepo().getDatabase().imageSourceDao();
+                List<ImageSource> imageSources = imageSourceDao.getImagesForDiary(diary.getId());
+                
+                int sourcesCount = 0;
+                int encodedCount = 0;
+                for (ImageSource imageSource : imageSources) {
+                    if (diary.isPrivate()) {
+                        encodedCount += FileUtils.deleteImageIfExists(imageSource.getEncodedFile()) ? 1 : 0;
+                    }
+                    if (deleteSourceFiles) {
+                        sourcesCount += FileUtils.deleteImageIfExists(imageSource.getSourceFile()) ? 1 : 0;
+                    }
+                }
+                
+                viewModel.getRepo().getDatabase().diaryDao().deleteById(diary.getId());
+                
+                if (deleteSourceFiles || diary.isPrivate()) {
+                    String message = "Deleted:\n";
+                    if (deleteSourceFiles) {
+                        message += "" + sourcesCount + " source image files\n";
+                    }
+                    if (diary.isPrivate()) {
+                        message += "" + encodedCount + " encoded image files\n";
+                    }
+                    message += "from " + imageSources.size() + " images";
+    
+                    final String finalMessage = message;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(activity, finalMessage, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+    
+    /**
+     * Updates diaries in rv, using diffUtil
+     */
     public void setDiaries(List<Diary> newDiaries) {
         if (diaries != null && newDiaries != null) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.diaries, newDiaries));
@@ -151,26 +224,27 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     private class MyDiffCallback extends DiffUtil.Callback {
         List<Diary> oldDiaries;
         List<Diary> newDiaries;
-    
+        
         MyDiffCallback(List<Diary> oldDiaries, List<Diary> newDiaries) {
             this.newDiaries = newDiaries;
             this.oldDiaries = oldDiaries;
         }
+        
         @Override
         public int getOldListSize() {
             return oldDiaries.size();
         }
-    
+        
         @Override
         public int getNewListSize() {
             return newDiaries.size();
         }
-    
+        
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
             return oldDiaries.get(oldItemPosition).getId() == newDiaries.get(newItemPosition).getId();
         }
-    
+        
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             return oldDiaries.get(oldItemPosition).equals(newDiaries.get(newItemPosition));
