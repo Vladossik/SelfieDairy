@@ -42,7 +42,6 @@ public class NotificationScheduler extends BroadcastReceiver {
             ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(500);
         }
         
-        
         Diary diary = null;
         try {
             diary = (Diary) SerializationUtils.convertFromBytes(intent.getByteArrayExtra("diary"));
@@ -55,36 +54,13 @@ public class NotificationScheduler extends BroadcastReceiver {
         Toast.makeText(context, "Alarm from diary: " + diary.getName(), Toast.LENGTH_SHORT).show();
         Log.d("my_tag", "received alarm from diary: " + diary.getName());
         
-        // sendNotification(context, diary);
+         NotificationPublisher.sendNotification(context, diary);
         
         // setting new alarm
         scheduleRemainder(context, diary);
         
     }
     
-    
-    private void sendNotification(Context context, Diary diary) {
-        
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(context, DiaryActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, diary.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        
-        Notification notification = new NotificationCompat.Builder(context, "notify_001")
-                .setContentTitle("SelfieDiary")
-                .setContentText("add photo to diary: " + diary.getName())
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.camera)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(pendingIntent)
-                .build();
-        
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        
-        mNotificationManager.notify(diary.getId(), notification);
-        
-    }
     
     public static void scheduleRemainder(Context context, Diary diary) {
         
