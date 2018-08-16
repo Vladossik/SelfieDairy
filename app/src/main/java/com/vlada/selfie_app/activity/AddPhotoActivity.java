@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.Encryption;
-import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;

@@ -6,7 +6,7 @@ import android.arch.persistence.room.Ignore;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.utils.FileUtils;
 
 import java.io.File;
 import java.io.Serializable;

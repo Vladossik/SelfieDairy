@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
-import com.vlada.selfie_app.Utils;
+import com.vlada.selfie_app.utils.PrintUtils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.ImageListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
@@ -119,7 +119,7 @@ public class DiaryActivity extends AppCompatActivity {
         }
         
         if (!deleted.isEmpty()) {
-            Log.d("my_tag", "findDeletedImages: Found deleted images: " + Utils.joinToString(deleted));
+            Log.d("my_tag", "findDeletedImages: Found deleted images: " + PrintUtils.joinToString(deleted));
         }
         
         return deleted;

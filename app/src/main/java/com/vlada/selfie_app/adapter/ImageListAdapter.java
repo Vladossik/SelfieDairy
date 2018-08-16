@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;

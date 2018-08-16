@@ -1,4 +1,4 @@
-package com.vlada.selfie_app;
+package com.vlada.selfie_app.utils;
 
 import android.content.Context;
 import android.content.Intent;

@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.enums.RemindFrequency;
-import com.vlada.selfie_app.notification.Notifications;
+import com.vlada.selfie_app.notification.NotificationScheduler;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -150,7 +150,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         intent.putExtra("diary", (Serializable) diary);
         setResult(RESULT_OK, intent);
         
-        Notifications.scheduleRemainder(this, diary);
+        NotificationScheduler.scheduleRemainder(this, diary);
         finish();
     }
     

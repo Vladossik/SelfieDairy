@@ -1,7 +1,6 @@
 package com.vlada.selfie_app.activity;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -18,7 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.vlada.selfie_app.Utils;
+import com.vlada.selfie_app.utils.PrintUtils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
@@ -91,7 +90,7 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in waiting diaries");
                 } else {
-                    Log.d("my_tag", "observer: updated waiting diaries: " + Utils.joinToString(diaries));
+                    Log.d("my_tag", "observer: updated waiting diaries: " + PrintUtils.joinToString(diaries));
                     waitingFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
             }
@@ -103,7 +102,7 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in done diaries");
                 } else {
-                    Log.d("my_tag", "observer: updated done diaries: " + Utils.joinToString(diaries));
+                    Log.d("my_tag", "observer: updated done diaries: " + PrintUtils.joinToString(diaries));
                     doneFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
             }

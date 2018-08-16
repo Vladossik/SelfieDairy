@@ -5,8 +5,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.exception.KeyChainException;
+import com.vlada.selfie_app.utils.FileUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import org.junit.runner.RunWith;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.*;
 

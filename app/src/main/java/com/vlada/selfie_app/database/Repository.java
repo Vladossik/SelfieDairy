@@ -5,19 +5,16 @@ import android.app.ProgressDialog;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.Encryption;
-import com.vlada.selfie_app.FileUtils;
+import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.database.dao.DiaryDao;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Main class for interacting with data

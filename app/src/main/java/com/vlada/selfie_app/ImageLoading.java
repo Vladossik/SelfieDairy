@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.database.entity.ImageSource;
+import com.vlada.selfie_app.utils.FileUtils;
 
 import java.io.File;
 
