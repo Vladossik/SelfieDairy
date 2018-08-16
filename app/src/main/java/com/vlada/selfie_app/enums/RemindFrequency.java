@@ -2,10 +2,11 @@ package com.vlada.selfie_app.enums;
 
 public enum RemindFrequency {
     Never(0, -1),
-    Daily(1, 24*60*60*1000),
-    Weekly(2, 24*60*60*7*1000),
-    Monthly(3, 24*60*60*31*1000),
-    Secondly(4,2*1000);
+    Daily(1, 24 * 60 * 60 * 1000),
+    Weekly(2, 24 * 60 * 60 * 7 * 1000),
+    Monthly(3, 24 * 60 * 60 * 31 * 1000),
+    FiveSeconds(4, 5 * 1000),
+    TenSeconds(5, 10 * 1000);
     
     public final int code;
     

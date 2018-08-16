@@ -25,22 +25,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import static android.content.Context.VIBRATOR_SERVICE;
-
 public class NotificationScheduler extends BroadcastReceiver {
     
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("my_tag", "in onReceive!!!!!!!!!!!!!!!!!!!!!!!!!!! at " + new SimpleDateFormat("dd.MM.yyyy : HH.mm.ss.SSS")
                 .format(Calendar.getInstance().getTime()));
-        Log.d("my_tag", "onReceive: message: " + intent.getStringExtra("message"));
+//        Log.d("my_tag", "onReceive: message: " + intent.getStringExtra("message"));
         
-        // Vibrate for 100 milliseconds
-        if (Build.VERSION.SDK_INT >= 26) {
-            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(500);
-        }
+//        // Vibrate for 100 milliseconds
+//        if (Build.VERSION.SDK_INT >= 26) {
+//            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+//        } else {
+//            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(500);
+//        }
         
         Diary diary = null;
         try {
@@ -51,14 +49,37 @@ public class NotificationScheduler extends BroadcastReceiver {
         }
         
         // For our recurring task, we'll just display a message
-        Toast.makeText(context, "Alarm from diary: " + diary.getName(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "Alarm from diary: " + diary.getName(), Toast.LENGTH_SHORT).show();
         Log.d("my_tag", "received alarm from diary: " + diary.getName());
         
-         NotificationPublisher.sendNotification(context, diary);
+        NotificationPublisher.sendNotification(context, diary);
         
         // setting new alarm
         scheduleRemainder(context, diary);
         
+    }
+    
+    private static Calendar getNextAlarmTime(Diary diary) {
+        Calendar calendar = Calendar.getInstance();
+        long interval = diary.getRemindFrequency().timeInMillis;
+        
+        if (interval < AlarmManager.INTERVAL_DAY) {
+            // interval is less then one day, so we just add it to current time
+            calendar.add(Calendar.MILLISECOND, (int) diary.getRemindFrequency().timeInMillis);
+        } else {
+            // interval is more then one day, 
+            // so we should use reminder time
+            calendar.set(Calendar.HOUR_OF_DAY, diary.getReminder().get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, diary.getReminder().get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            // if reminder time is before or very close to the current time,
+            // jump over to the next calling time 
+            if (calendar.getTimeInMillis() <= Calendar.getInstance().getTimeInMillis() + 100) {
+                calendar.setTimeInMillis(calendar.getTimeInMillis() + interval);
+            }
+        }
+        return calendar;
     }
     
     
@@ -66,26 +87,22 @@ public class NotificationScheduler extends BroadcastReceiver {
         
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         
-        Calendar firstCallTime = Calendar.getInstance();
-        firstCallTime.add(Calendar.MILLISECOND, 3000);
-//        firstCallTime.set(Calendar.HOUR_OF_DAY, diary.getReminder().get(Calendar.HOUR_OF_DAY));
-//        firstCallTime.set(Calendar.MINUTE, diary.getReminder().get(Calendar.MINUTE));
-//
-//        if (firstCallTime.before(Calendar.getInstance())) {
-//            firstCallTime.add(Calendar.DAY_OF_YEAR, 1);
-//        }
         PendingIntent pendingIntent = pendingIntentFromDiary(context, diary);
         
-        if (diary.getRemindFrequency() == RemindFrequency.Never) {
-            alarmManager.cancel(pendingIntent);
-            Log.d("my_tag", "scheduleRemainder: canceled alarm for diary: " + diary.getName());
-        } else {
+        // always cancel previous alarm
+        alarmManager.cancel(pendingIntent);
+//        Log.d("my_tag", "scheduleRemainder: canceled alarm for diary: " + diary.getName());
+        
+        // schedule next alarm
+        if (diary.getRemindFrequency() != RemindFrequency.Never) {
+            Calendar callTime = getNextAlarmTime(diary);
+            
             Log.d("my_tag", "scheduleRemainder: scheduled alarm at " + new SimpleDateFormat("dd.MM.yyyy : HH.mm.ss.SSS")
-                    .format(firstCallTime.getTime()) + " for diary: " + diary.getName());
-
-//            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstCallTime.getTimeInMillis(),
-//                    1000 * 60, pendingIntent);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, firstCallTime.getTimeInMillis(), pendingIntent);
+                    .format(callTime.getTime()) + " for diary: " + diary.getName());
+            
+            
+            
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, callTime.getTimeInMillis(), pendingIntent);
         }
     }
     
@@ -96,7 +113,7 @@ public class NotificationScheduler extends BroadcastReceiver {
         
         /* Retrieve a PendingIntent that will perform a broadcast */
         Intent alarmIntent = new Intent(context, NotificationScheduler.class);
-        alarmIntent.putExtra("message", "hello from scheduler!");
+//        alarmIntent.putExtra("message", "hello from scheduler!");
         
         try {
             alarmIntent.putExtra("diary", SerializationUtils.convertToBytes(diary));
