@@ -21,7 +21,6 @@ import com.vlada.selfie_app.utils.PrintUtils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
 import com.vlada.selfie_app.database.entity.Diary;
-import com.vlada.selfie_app.dialog.EnterPasswordDialog;
 import com.vlada.selfie_app.fragment.DiaryListFragment;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.adapter.ViewPagerAdapter;
@@ -171,16 +170,5 @@ public class MainActivity extends FragmentActivity {
     public void openDiaryActivity(Diary diary) {
         final Intent intent = new Intent(this, DiaryActivity.class);
         intent.putExtra("diary", diary);
-        
-        if (diary.isPrivate()) {
-            new EnterPasswordDialog(this, new Runnable() {
-                @Override
-                public void run() {
-                    startActivity(intent);
-                }
-            }).show();
-        } else {
-            startActivity(intent);
-        }
     }
 }

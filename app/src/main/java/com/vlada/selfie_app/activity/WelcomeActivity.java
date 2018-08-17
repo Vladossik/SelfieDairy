@@ -27,17 +27,17 @@ public class WelcomeActivity extends AppCompatActivity {
             public void run() {
                 startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                 finish();
-//                if (password.equals("")) {
-//                    //if there is no password
-//                    Intent intent = new Intent(WelcomeActivity.this, CreatePasswordActivity.class);
-//                    startActivity(intent);
-//                    finish();
-//                } else {
-//                    //if there ia s password
-//                    Intent intent = new Intent(WelcomeActivity.this, EnterPasswordActivity.class);
-//                    startActivity(intent);
-//                    finish();
-//                }
+                if (password.equals("")) {
+                    //if there is no password
+                    Intent intent = new Intent(WelcomeActivity.this, CreatePasswordActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    //if there ia s password
+                    Intent intent = new Intent(WelcomeActivity.this, EnterPasswordActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         }, 2000);
         

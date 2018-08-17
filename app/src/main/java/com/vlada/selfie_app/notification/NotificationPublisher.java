@@ -45,7 +45,7 @@ public class NotificationPublisher {
                 .setContentTitle("SelfieDiary")
                 .setContentText("add photo to diary " + diary.getName())
                 .setAutoCancel(true)
-                .setSmallIcon(R.drawable.camera)
+                .setSmallIcon(R.drawable.camera_icon)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(pendingIntent)
                 .build();
