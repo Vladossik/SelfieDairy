@@ -14,4 +14,5 @@
     <string name="aboutAdded">About photo</string>
     <string name="diary_notification_channel_name">Diary Notification</string>
     <string name="diary_notification_channel_description">Publish notifications from diaries</string>
+    <string name="title_activity_open_photo">OpenPhotoActivity</string>
 </resources>

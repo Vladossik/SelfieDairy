@@ -154,7 +154,7 @@ public class DiaryActivity extends AppCompatActivity {
     
     
     public void openActivityToEditImage(ImageSource image) {
-        Intent intent = new Intent(this, AddPhotoActivity.class);
+        Intent intent = new Intent(this, OpenPhotoActivity.class);
         intent.putExtra("diary", diary);
         intent.putExtra("editing", true);
         intent.putExtra("oldImage", image);

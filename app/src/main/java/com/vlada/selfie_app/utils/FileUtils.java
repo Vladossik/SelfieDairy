@@ -5,11 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
-
-import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -18,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 
 public class FileUtils {
@@ -26,30 +24,50 @@ public class FileUtils {
     
     private static final String FOLDER_NAME = "SelfieDiary";
     
+    public static void copyFile(File src, File dst) throws IOException {
+        try (InputStream in = new FileInputStream(src)) {
+            try (OutputStream out = new FileOutputStream(dst)) {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
+        }
+    }
+    
     private static class Folders {
         
         
         /**
-         * storage/emulated/0/SelfieDiary
+         * /data/user/0/com.vlada.selfie_app/files
          */
-        public static File geFolderInExternal() {
+        static File geFolderInExternal() {
             return new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
         }
         
         /**
          * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures
          */
-        public static File getFolderInAndroidData(Context context) {
+        static File getFolderInAndroidData(Context context) {
             return context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         }
         
         /**
          * storage/emulated/0/Android/data/com.vlada.selfie_app/files/Pictures/SelfieDiary
          */
-        public static File getFolderInPictures() {
+        static File getFolderInPictures() {
             File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             folder = new File(folder, FOLDER_NAME);
             return folder;
+        }
+        
+        /**
+         * /data/data/{your package name}/files
+         */
+        static File getInternalFilesDir(Context context) {
+            return context.getFilesDir();
         }
     }
     
@@ -76,6 +94,17 @@ public class FileUtils {
     public static File getImageFolder() {
         return Folders.geFolderInExternal();
     }
+    
+    
+    /**
+     * Path to image avatar.png
+     */
+    public static File getAvatarFile(Context context) {
+        File folder = Folders.getInternalFilesDir(context);
+        folder.mkdirs();
+        return new File(folder, "avatar.png");
+    }
+    
     
     public static File getEncodedFolder() {
         return new File(getImageFolder(), "encoded");

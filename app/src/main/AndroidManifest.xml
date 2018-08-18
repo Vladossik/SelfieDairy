@@ -9,7 +9,6 @@
         android:name="android.hardware.camera"
         android:required="false"/>
 
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -42,6 +41,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity"/>
         </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.vlada.selfie_app.fileprovider"
@@ -51,8 +51,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_list"/>
         </provider>
-        <receiver
-            android:name=".notification.NotificationScheduler"/>
+
+        <receiver android:name=".notification.NotificationScheduler"/>
+
+        <activity
+            android:name=".activity.OpenPhotoActivity"
+            android:label="@string/title_activity_open_photo"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
     </application>
 
 </manifest>

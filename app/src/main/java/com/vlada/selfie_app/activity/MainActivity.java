@@ -4,7 +4,9 @@ import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -15,8 +17,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+import com.vlada.selfie_app.ImageLoading;
+import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.utils.PrintUtils;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.adapter.DiaryListAdapter;
@@ -25,6 +33,7 @@ import com.vlada.selfie_app.fragment.DiaryListFragment;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.adapter.ViewPagerAdapter;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -41,6 +50,7 @@ public class MainActivity extends FragmentActivity {
     private ViewModel viewModel;
     DiaryListFragment doneFragment;
     DiaryListFragment waitingFragment;
+    private ImageView ivAvatar;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,7 @@ public class MainActivity extends FragmentActivity {
         tabLayout = findViewById(R.id.tabLayout);
 //        appBarLayout = (AppBarLayout) findViewById(R.id.appBarId);
         viewPager = findViewById(R.id.viewPager);
+        ivAvatar = findViewById(R.id.ivAvatar);
         
         ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         //adding fragments
@@ -104,6 +115,26 @@ public class MainActivity extends FragmentActivity {
                     Log.d("my_tag", "observer: updated done diaries: " + PrintUtils.joinToString(diaries));
                     doneFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
+            }
+        });
+        
+        
+        findViewById(R.id.btnDeleteAvatar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileUtils.deleteImageIfExists(FileUtils.getAvatarFile(MainActivity.this));
+                updateAvatar();
+            }
+        });
+        findViewById(R.id.btnChangeAvatarGravity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenPhotoActivity.showAvatarGravityDialog(MainActivity.this, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateAvatar();
+                    }
+                });
             }
         });
         
@@ -170,5 +201,33 @@ public class MainActivity extends FragmentActivity {
     public void openDiaryActivity(Diary diary) {
         final Intent intent = new Intent(this, DiaryActivity.class);
         intent.putExtra("diary", diary);
+    }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateAvatar();
+    }
+    
+    private void updateAvatar() {
+        File avatarFile = FileUtils.getAvatarFile(this);
+        if (avatarFile.exists()) {
+            SharedPreferences settings = getSharedPreferences("settings", 0);
+            int gravity = settings.getInt("avatarGravity", Gravity.CENTER);
+            
+            // invalidation happens when inserting new avatar
+//            Picasso.get().invalidate(avatarFile);
+            Picasso.get()
+                    .load(avatarFile)
+                    .placeholder(R.drawable.camera)
+                    .resize(400, 400)
+                    .onlyScaleDown()
+                    .centerCrop(gravity)
+                    .into(ivAvatar);
+            
+            
+        } else {
+            ivAvatar.setImageResource(R.drawable.camera);
+        }
     }
 }
