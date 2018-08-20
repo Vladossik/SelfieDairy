@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <external-path name="image_folder"
-                   path="." />
+    <external-path
+        name="image_folder"
+        path="."/>
+    <root-path
+        name="external_files"
+        path="/storage/"/>
 </paths> 

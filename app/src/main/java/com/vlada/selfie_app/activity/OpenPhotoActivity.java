@@ -3,12 +3,14 @@ package com.vlada.selfie_app.activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.media.ExifInterface;
 import android.support.v7.app.AlertDialog;
@@ -47,6 +49,7 @@ public class OpenPhotoActivity extends AppCompatActivity {
     private Button btnAvatar;
     private Button btnShare;
     TextView tvDateOfCreate;
+    private File imageFile;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +73,34 @@ public class OpenPhotoActivity extends AppCompatActivity {
         etPhotoDescription.setText(imageSource.getDescription());
         
         
-        File imageFile = ImageLoading.getDecodedImage(OpenPhotoActivity.this, imageSource);
+        imageFile = ImageLoading.getDecodedImage(OpenPhotoActivity.this, imageSource);
         ImageLoading.loadImageInView(imageFile, ivPhoto);
         
         tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
                 .format(imageSource.getDateOfCreate().getTime()));
+        
+        
+        // open photo in gallery
+        ivPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(getUriFromFile(imageFile), "image/*");
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    context.startActivity(Intent.createChooser(intent, "View using"));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(OpenPhotoActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    
+    
+    private Uri getUriFromFile(File file) {
+        return FileUtils.uriFromFile(this, file);
     }
     
     @Override
@@ -115,7 +141,14 @@ public class OpenPhotoActivity extends AppCompatActivity {
     
     
     public void btnShareClick(View v) {
-        
+        try {
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.setType("image/jpeg");
+            share.putExtra(Intent.EXTRA_STREAM, getUriFromFile(imageFile));
+            startActivity(Intent.createChooser(share, "Share Image"));
+        } catch (Exception e) {
+            Toast.makeText(OpenPhotoActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
     
     public void btnAvatarClick(View v) {
@@ -134,8 +167,6 @@ public class OpenPhotoActivity extends AppCompatActivity {
                 // just copying this file to avatar path
                 File avatarFile = FileUtils.getAvatarFile(OpenPhotoActivity.this);
                 avatarFile.delete();
-                
-                File imageFile = ImageLoading.getDecodedImage(OpenPhotoActivity.this, imageSource);
                 
                 try {
                     FileUtils.copyFile(imageFile, avatarFile);
@@ -224,9 +255,8 @@ public class OpenPhotoActivity extends AppCompatActivity {
                     }
                 }).create().show();
     }
-    
-    
-    
+
+
 //    private Bitmap getScaledAvatar(File imageFile) {
 //        Bitmap bmp = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
 //        

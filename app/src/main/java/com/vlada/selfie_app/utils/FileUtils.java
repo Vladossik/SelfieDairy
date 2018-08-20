@@ -72,14 +72,19 @@ public class FileUtils {
     }
     
     
+    /** Returns uri from file, using FileProvider*/
+    public static Uri uriFromFile(Context context, File fileToSave) {
+            return FileProvider.getUriForFile(context,
+                    "com.vlada.selfie_app.fileprovider",
+                    fileToSave);
+    }
+    
     public static Intent createCameraIntent(Context context, File fileToSave) {
         File folder = fileToSave.getParentFile();
         if (folder != null)
             folder.mkdirs();
         
-        Uri photoURI = FileProvider.getUriForFile(context,
-                "com.vlada.selfie_app.fileprovider",
-                fileToSave);
+        Uri photoURI = uriFromFile(context, fileToSave);
         
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         
