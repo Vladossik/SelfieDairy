@@ -60,9 +60,11 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name=".activity.EnterPasswordActivity">
+        <activity android:name=".activity.EnterPasswordActivity"
+                  android:windowSoftInputMode="stateVisible">
         </activity>
-        <activity android:name=".activity.CreatePasswordActivity">
+        <activity android:name=".activity.CreatePasswordActivity"
+                  android:windowSoftInputMode="stateVisible">
         </activity>
     </application>
 

@@ -16,6 +16,7 @@ import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -40,14 +41,14 @@ public class Repository {
         imageSourceDao = db.imageSourceDao();
     }
     
-    public static void filterPrivateDiaries(List<Diary> diaries) {
-        ListIterator<Diary> iterator = diaries.listIterator();
-        while (iterator.hasNext()) {
-            Diary next = iterator.next();
-            if (next.isPrivate()) {
-                iterator.remove();
+    public static List<Diary> filterPrivateDiaries(List<Diary> diaries) {
+        List<Diary> answer = new ArrayList<>();
+        for (Diary diary : diaries) {
+            if (!diary.isPrivate()) {
+                answer.add(diary);
             }
         }
+        return answer;
     }
     
     public LiveData<List<Diary>> getAllDiaries() {

@@ -28,6 +28,7 @@ import com.vlada.selfie_app.utils.FileUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.ListIterator;
 
 import static android.content.Context.VIBRATOR_SERVICE;
 
@@ -53,7 +54,9 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     
     private final LayoutInflater mInflater;
     private ViewModel viewModel;
-    private List<Diary> diaries; // Cached copy of words
+    
+    // Cached copy of diaries
+    private List<Diary> diaries;
     private MainActivity activity;
     
     public DiaryListAdapter(MainActivity activity, ViewModel viewModel) {
@@ -171,7 +174,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                                         message += "" + encodedCount + " encoded image files\n";
                                     }
                                     message += "from " + allImagesCount + " images";
-    
+                                    
                                     final String finalMessage = message;
                                     activity.runOnUiThread(new Runnable() {
                                         @Override
@@ -188,12 +191,40 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                 .show();
     }
     
+    /**
+     * Here we always have private diaries even if they are not visible
+     */
+    private List<Diary> extraDiaries;
     
+    private boolean showPrivateDiaries = true;
+    
+    public void setShowPrivateDiaries(boolean value) {
+        if (value != showPrivateDiaries) {
+            showPrivateDiaries = value;
+            onShowPrivateDiariesChanged();
+        } else {
+            this.showPrivateDiaries = value;
+        }
+    }
+    
+    private void onShowPrivateDiariesChanged() {
+        setDiaries(extraDiaries);
+    }
     
     /**
      * Updates diaries in rv, using diffUtil
      */
     public void setDiaries(List<Diary> newDiaries) {
+        if (newDiaries == null) {
+            return;
+        }
+        // save all diaries with private
+        extraDiaries = newDiaries;
+        if (!showPrivateDiaries) {
+            // filter newDiaries
+            newDiaries = Repository.filterPrivateDiaries(newDiaries);
+        }
+        
         if (diaries != null && newDiaries != null) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.diaries, newDiaries));
             diaries = newDiaries;

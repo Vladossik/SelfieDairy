@@ -59,6 +59,20 @@ public class MainActivity extends FragmentActivity {
     private PasswordService passwordService;
     private boolean passwordEntered;
     
+    private boolean isPasswordEntered() {
+        return passwordEntered;
+    }
+    
+    /**
+     * Sets backing field and updates recycler views.
+     */
+    public void setPasswordEntered(boolean passwordEntered) {
+        // show private diaries only if the password has been entered
+        waitingFragment.getDiaryListAdapter().setShowPrivateDiaries(passwordEntered);
+        doneFragment.getDiaryListAdapter().setShowPrivateDiaries(passwordEntered);
+        this.passwordEntered = passwordEntered;
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +104,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CreateDiaryActivity.class);
-                intent.putExtra("passwordEntered", passwordEntered);
+                intent.putExtra("passwordEntered", isPasswordEntered());
                 startActivityForResult(intent, CREATE_DIARY_REQUEST);
             }
         });
@@ -126,13 +140,7 @@ public class MainActivity extends FragmentActivity {
                 passwordService.deletePasswordWithDialog(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-        
-                            }
-                        });
-                        passwordEntered = false;
+                        setPasswordEntered(false);
                         Toast.makeText(MainActivity.this, "Done!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -145,8 +153,7 @@ public class MainActivity extends FragmentActivity {
                     @Override
                     public void onResult(boolean result) {
                         if (result) {
-                            passwordEntered = true;
-                            // Should we update data?
+                            setPasswordEntered(true);
                         }
                     }
                 });
@@ -160,11 +167,11 @@ public class MainActivity extends FragmentActivity {
             passwordService.askPasswordOrCreate(new BooleanCallback() {
                 @Override
                 public void onResult(boolean result) {
-                    // show private diaries only if we entered the password
-                    passwordEntered = result;
-                    if (!passwordEntered) {
+                    // show private diaries only if we have entered the password
+                    setPasswordEntered(result);
+                    if (!isPasswordEntered()) {
                         Toast.makeText(MainActivity.this,
-                                "Password is not entered. Private diaries are hidden!", Toast.LENGTH_SHORT).show();
+                                "Password was not entered. Private diaries are hidden!", Toast.LENGTH_SHORT).show();
                     }
                     connectDiaryData();
                 }
@@ -181,8 +188,6 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in waiting diaries");
                 } else {
-                    if (!passwordEntered)
-                        Repository.filterPrivateDiaries(diaries);
                     Log.d("my_tag", "observer: updated waiting diaries: " + PrintUtils.joinToString(diaries));
                     waitingFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
@@ -194,8 +199,6 @@ public class MainActivity extends FragmentActivity {
                 if (diaries == null) {
                     Log.d("my_tag", "observer: null in done diaries");
                 } else {
-                    if (!passwordEntered)
-                        Repository.filterPrivateDiaries(diaries);
                     Log.d("my_tag", "observer: updated done diaries: " + PrintUtils.joinToString(diaries));
                     doneFragment.getDiaryListAdapter().setDiaries(diaries);
                 }
@@ -247,8 +250,7 @@ public class MainActivity extends FragmentActivity {
             
             // update passwordEntered if we have entered password inside CreateDiaryActivity
             // (before inserting diary in database)
-            // so, after next update in database passwordEntered will be used
-            passwordEntered = data.getBooleanExtra("passwordEntered", passwordEntered);
+            setPasswordEntered(data.getBooleanExtra("passwordEntered", isPasswordEntered()));
             
         }
     }
@@ -262,7 +264,7 @@ public class MainActivity extends FragmentActivity {
     public void openActivityForEditing(Diary diary) {
         
         Intent intent = new Intent(this, CreateDiaryActivity.class);
-        intent.putExtra("passwordEntered", passwordEntered);
+        intent.putExtra("passwordEntered", isPasswordEntered());
         intent.putExtra("oldDiary", diary);
         
         startActivityForResult(intent, EDIT_DIARY_REQUEST);

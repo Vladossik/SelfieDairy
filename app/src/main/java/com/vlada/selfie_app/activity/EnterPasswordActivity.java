@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.PasswordService;
@@ -28,6 +31,36 @@ public class EnterPasswordActivity extends AppCompatActivity {
         
         etPassword = findViewById(R.id.etPassword);
         btnEnter = findViewById(R.id.btnEnter);
+        
+        etPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    btnEnterClick(null);
+                }
+                return false;
+            }
+        });
+        
+        findViewById(R.id.btnRemovePassword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new PasswordService(EnterPasswordActivity.this).deletePasswordWithDialog(new Runnable() {
+                    @Override
+                    public void run() {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                });
+            }
+        });
+        
+        findViewById(R.id.btnCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
     }
     
     public void btnEnterClick(View v) {

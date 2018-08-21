@@ -3,9 +3,12 @@ package com.vlada.selfie_app.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.PasswordService;
@@ -27,6 +30,15 @@ public class CreatePasswordActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         
         passwordService = new PasswordService(this);
+        
+        etPasswordCopy.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    btnSaveClick(null);
+                }
+                return false;
+            }
+        });
     }
     
     public void btnSaveClick(View v) {

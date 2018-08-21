@@ -98,6 +98,10 @@ public class PasswordService {
     }
     
     
+//    public interface AskOrCreateCallback {
+//        void onResult(Boolean succeed, Boolean deletedPassword);
+//    }
+    
     public void askPasswordOrCreate(BooleanCallback booleanCallback) {
         callbackMap.put(ASK_OR_CREATE_REQUEST, booleanCallback);
         
