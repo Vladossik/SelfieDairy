@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.vlada.selfie_app.Encryption;
+import com.vlada.selfie_app.enums.RemindFrequency;
+import com.vlada.selfie_app.notification.NotificationScheduler;
 import com.vlada.selfie_app.utils.BooleanCallback;
 import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.database.dao.DiaryDao;
@@ -18,7 +20,6 @@ import com.vlada.selfie_app.database.entity.ImageSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Main class for interacting with data
@@ -123,16 +124,16 @@ public class Repository {
         public void onResult(int sourcesCount, int encodedCount, int allImagesCount);
     }
     
-    public void deleteDiary(final Diary diary, final boolean deleteSourceFiles, final @Nullable DeleteDiaryCallback callback) {
+    public void deleteDiary(final Context context, final Diary diary, final boolean deleteSourceFiles, final @Nullable DeleteDiaryCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                deleteDiaryThisThread(diary, deleteSourceFiles, callback);
+                deleteDiaryThisThread(context, diary, deleteSourceFiles, callback);
             }
         }).start();
     }
     
-    private void deleteDiaryThisThread(final Diary diary, final boolean deleteSourceFiles, final @Nullable DeleteDiaryCallback callback) {
+    private void deleteDiaryThisThread(Context context, final Diary diary, final boolean deleteSourceFiles, final @Nullable DeleteDiaryCallback callback) {
         List<ImageSource> imageSources = imageSourceDao.getImagesForDiary(diary.getId());
         
         int sourcesCount = 0;
@@ -145,6 +146,10 @@ public class Repository {
                 sourcesCount += FileUtils.deleteImageIfExists(imageSource.getSourceFile()) ? 1 : 0;
             }
         }
+        
+        // Removing notifications
+        diary.setRemindFrequency(RemindFrequency.Never);
+        NotificationScheduler.scheduleRemainder(context, diary);
         
         diaryDao.deleteById(diary.getId());
         
@@ -174,7 +179,7 @@ public class Repository {
                 int progress = 0;
                 for (Diary diary : privateDiaries) {
                     progressDialog.setProgress(progress);
-                    deleteDiaryThisThread(diary, false, null);
+                    deleteDiaryThisThread(context, diary, false, null);
                     progress++;
                 }
                 

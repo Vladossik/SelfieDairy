@@ -162,7 +162,7 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                     public void onClick(DialogInterface dialog, int which) {
                         final boolean deleteSourceFiles = checkedItems[0];
                         
-                        viewModel.getRepo().deleteDiary(diary, deleteSourceFiles, new Repository.DeleteDiaryCallback() {
+                        viewModel.getRepo().deleteDiary(activity, diary, deleteSourceFiles, new Repository.DeleteDiaryCallback() {
                             @Override
                             public void onResult(int sourcesCount, int encodedCount, int allImagesCount) {
                                 if (deleteSourceFiles || diary.isPrivate()) {
