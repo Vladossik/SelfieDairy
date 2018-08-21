@@ -21,10 +21,12 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.vlada.selfie_app.PasswordService;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.enums.RemindFrequency;
 import com.vlada.selfie_app.notification.NotificationScheduler;
+import com.vlada.selfie_app.utils.BooleanCallback;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -37,10 +39,18 @@ public class CreateDiaryActivity extends AppCompatActivity {
     private Button btnReminderTime;
     private Spinner spnRemindFrequency;
     private Switch swchPrivate;
+    
+    private PasswordService passwordService;
+    
+    /**
+     * True if the password was entered in MainActivity
+     */
+    private boolean passwordEntered;
     /**
      * Diary, which has been sent for editing or new created diary.
      */
     Diary diary;
+    private boolean inEditMode = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +60,10 @@ public class CreateDiaryActivity extends AppCompatActivity {
         toolbar.setTitle("Create new diary");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
+        
+        passwordService = new PasswordService(this);
+        
+        passwordEntered = getIntent().getBooleanExtra("passwordEntered", false);
         
         etName = findViewById(R.id.etName);
         etDescription = findViewById(R.id.etDescription);
@@ -72,6 +86,7 @@ public class CreateDiaryActivity extends AppCompatActivity {
         // check if we have old diary to edit
         
         if (getIntent().hasExtra("oldDiary")) {
+            inEditMode = true;
             diary = (Diary) getIntent().getSerializableExtra("oldDiary");
             
             // restore all values from old Diary
@@ -132,6 +147,34 @@ public class CreateDiaryActivity extends AppCompatActivity {
             return;
         }
         
+        final Intent intent = new Intent();
+        
+        boolean privacyChanged = diary.isPrivate() != swchPrivate.isChecked();
+        if (privacyChanged) {
+            intent.putExtra("privacyChanged", true);
+        }
+    
+        // (if we had changed diary.isPrivate here we would have broken privacyChanged checker after unsuccessful password request)
+        
+        // if we should ask password
+        if (swchPrivate.isChecked() && !passwordEntered && (privacyChanged || !inEditMode)) {
+            passwordService.askPasswordOrCreate(new BooleanCallback() {
+                @Override
+                public void onResult(boolean result) {
+                    // if password entered or created correctly
+                    if (result) {
+                        intent.putExtra("passwordEntered", true);
+                        continueSavingDiary(intent);
+                    }
+                }
+            });
+        } else {
+            continueSavingDiary(intent);
+        }
+    }
+    
+    private void continueSavingDiary(Intent intent) {
+        
         // update diary fields
         diary.setName(etName.getText().toString());
         diary.setDescription(etDescription.getText().toString());
@@ -140,17 +183,12 @@ public class CreateDiaryActivity extends AppCompatActivity {
         diary.setRemindFrequency(RemindFrequency.values()[selectedFrequency]);
         // Reminder time is updated in time picker handler
         
-        Intent intent = new Intent();
-        
-        if (diary.isPrivate() != swchPrivate.isChecked()) {
-            intent.putExtra("privacyChanged", true);
-        }
+        // privacy should be changed only just before saving!!
+        // because we compare it with switch to check for default value
         diary.setPrivate(swchPrivate.isChecked());
-        
         intent.putExtra("diary", (Serializable) diary);
+        // we shouldn't ask password.
         setResult(RESULT_OK, intent);
-        
-        NotificationScheduler.scheduleRemainder(this, diary);
         finish();
     }
     
@@ -172,4 +210,10 @@ public class CreateDiaryActivity extends AppCompatActivity {
             updateReminderTimeText();
         }
     };
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        passwordService.onActivityResult(requestCode, resultCode, data);
+    }
 }

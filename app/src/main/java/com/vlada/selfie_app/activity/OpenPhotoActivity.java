@@ -211,12 +211,12 @@ public class OpenPhotoActivity extends AppCompatActivity {
     public static void showAvatarGravityDialog(final Context context, final Runnable onResult) {
         // setup the alert builder
         // add a radio button list
-        String[] animals = {"top", "bottom", "left", "right", "center"};
+        String[] gravities = {"top", "bottom", "left", "right", "center"};
         final int[] checkedItem = {4};
         
         new AlertDialog.Builder(context)
                 .setTitle("Choose avatar gravity")
-                .setSingleChoiceItems(animals, checkedItem[0], new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(gravities, checkedItem[0], new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         checkedItem[0] = which;

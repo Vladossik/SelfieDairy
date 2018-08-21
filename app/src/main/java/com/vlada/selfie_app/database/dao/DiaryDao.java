@@ -27,7 +27,14 @@ public interface DiaryDao {
     void deleteById(int id);
     
     @Query("SELECT * from Diary ORDER BY dateOfCreate DESC")
-    LiveData<List<Diary>> getAllDiaries();
+    LiveData<List<Diary>> getAllDiariesLive();
+    
+    @Query("SELECT * from Diary ORDER BY dateOfCreate DESC")
+    List<Diary> getAllDiaries();
+    
+    @Query("SELECT * from Diary WHERE isPrivate ORDER BY dateOfCreate DESC")
+    List<Diary> getAllPrivateDiaries();
+    
     
     @Query("SELECT * from Diary WHERE isDone ORDER BY dateOfCreate DESC")
     LiveData<List<Diary>> getAllDoneDiaries();

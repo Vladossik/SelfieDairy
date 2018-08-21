@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.Encryption;
+import com.vlada.selfie_app.utils.BooleanCallback;
 import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.ImageLoading;
 import com.vlada.selfie_app.R;
@@ -259,7 +260,7 @@ public class AddPhotoActivity extends AppCompatActivity {
                 // check if image does not exist in database.
                 
                 viewModel.getRepo().checkIfImageExists(imageSource.getSource(),
-                        imageSource.getDiaryId(), new Repository.BooleanCallback() {
+                        imageSource.getDiaryId(), new BooleanCallback() {
                             @Override
                             public void onResult(boolean result) {
                                 if (result) {

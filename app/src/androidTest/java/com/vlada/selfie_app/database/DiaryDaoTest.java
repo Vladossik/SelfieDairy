@@ -24,7 +24,7 @@ public class DiaryDaoTest extends DatabaseTest {
         
         diaryDao.insert(diary);
         
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         
         assertEquals(allDiaries.get(0).getName(), diary.getName());
         assertEquals(allDiaries.get(0).getReminder(), diary.getReminder());
@@ -60,7 +60,7 @@ public class DiaryDaoTest extends DatabaseTest {
         
         
         // check sorting in dateOfCreate order:
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertEquals(allDiaries.get(0).getName(), diary2.getName());
         assertEquals(allDiaries.get(1).getName(), diary1.getName());
     }
@@ -77,7 +77,7 @@ public class DiaryDaoTest extends DatabaseTest {
         diaryDao.insert(diary3);
         
         
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertEquals(allDiaries.size(), 3);
         
     }
@@ -92,7 +92,7 @@ public class DiaryDaoTest extends DatabaseTest {
         diaryDao.insert(diary2);
         
         diaryDao.deleteAll();
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertTrue(allDiaries.isEmpty());
     }
     
@@ -114,7 +114,7 @@ public class DiaryDaoTest extends DatabaseTest {
         
         assertNotSame(diary1.getId(), diary2.getId());
         
-//        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+//        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
     }
     
     
@@ -127,12 +127,12 @@ public class DiaryDaoTest extends DatabaseTest {
         insertDiaryAndUpdateId(diary1);
         insertDiaryAndUpdateId(diary2);
         
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertEquals(2, allDiaries.size());
         
         diaryDao.deleteById(diary1.getId());
         
-        allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertEquals(1, allDiaries.size());
     }
     
@@ -156,7 +156,7 @@ public class DiaryDaoTest extends DatabaseTest {
         
         diaryDao.update(diary1);
         
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         
         assertEquals(1, allDiaries.size());
         assertEquals("hello", allDiaries.get(0).getName());
@@ -169,7 +169,7 @@ public class DiaryDaoTest extends DatabaseTest {
         // Nothing should happen
         diaryDao.update(diary1);
         
-        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiaries());
+        List<Diary> allDiaries = LiveDataTestUtil.getValue(diaryDao.getAllDiariesLive());
         assertEquals(0, allDiaries.size());
     }
     

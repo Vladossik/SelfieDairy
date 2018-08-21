@@ -3,10 +3,10 @@ package com.vlada.selfie_app.activity;
 import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +24,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.vlada.selfie_app.ImageLoading;
+import com.vlada.selfie_app.PasswordService;
+import com.vlada.selfie_app.database.Repository;
+import com.vlada.selfie_app.notification.NotificationScheduler;
+import com.vlada.selfie_app.utils.BooleanCallback;
 import com.vlada.selfie_app.utils.FileUtils;
 import com.vlada.selfie_app.utils.PrintUtils;
 import com.vlada.selfie_app.ViewModel;
@@ -51,6 +55,9 @@ public class MainActivity extends FragmentActivity {
     DiaryListFragment doneFragment;
     DiaryListFragment waitingFragment;
     private ImageView ivAvatar;
+    
+    private PasswordService passwordService;
+    private boolean passwordEntered;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, CreateDiaryActivity.class);
+                intent.putExtra("passwordEntered", passwordEntered);
                 startActivityForResult(intent, CREATE_DIARY_REQUEST);
             }
         });
@@ -93,31 +101,6 @@ public class MainActivity extends FragmentActivity {
         // connect viewModel with diaryListAdapter in fragments
         doneFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
         waitingFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
-        
-        viewModel.getRepo().getAllWaitingDiaries().observe(this, new Observer<List<Diary>>() {
-            @Override
-            public void onChanged(@Nullable List<Diary> diaries) {
-                if (diaries == null) {
-                    Log.d("my_tag", "observer: null in waiting diaries");
-                } else {
-                    Log.d("my_tag", "observer: updated waiting diaries: " + PrintUtils.joinToString(diaries));
-                    waitingFragment.getDiaryListAdapter().setDiaries(diaries);
-                }
-            }
-        });
-        
-        viewModel.getRepo().getAllDoneDiaries().observe(this, new Observer<List<Diary>>() {
-            @Override
-            public void onChanged(@Nullable List<Diary> diaries) {
-                if (diaries == null) {
-                    Log.d("my_tag", "observer: null in done diaries");
-                } else {
-                    Log.d("my_tag", "observer: updated done diaries: " + PrintUtils.joinToString(diaries));
-                    doneFragment.getDiaryListAdapter().setDiaries(diaries);
-                }
-            }
-        });
-        
         
         findViewById(R.id.btnDeleteAvatar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +120,87 @@ public class MainActivity extends FragmentActivity {
                 });
             }
         });
+        findViewById(R.id.btnRemovePassword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passwordService.deletePasswordWithDialog(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
         
+                            }
+                        });
+                        passwordEntered = false;
+                        Toast.makeText(MainActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        findViewById(R.id.btnChangePassword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passwordService.changePasswordOrCreate(new BooleanCallback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        if (result) {
+                            passwordEntered = true;
+                            // Should we update data?
+                        }
+                    }
+                });
+            }
+        });
+        
+        // connecting to database with diaries and asking a password
+        
+        passwordService = new PasswordService(this);
+        if (passwordService.hasPassword()) {
+            passwordService.askPasswordOrCreate(new BooleanCallback() {
+                @Override
+                public void onResult(boolean result) {
+                    // show private diaries only if we entered the password
+                    passwordEntered = result;
+                    if (!passwordEntered) {
+                        Toast.makeText(MainActivity.this,
+                                "Password is not entered. Private diaries are hidden!", Toast.LENGTH_SHORT).show();
+                    }
+                    connectDiaryData();
+                }
+            });
+        } else {
+            connectDiaryData();
+        }
+    }
+    
+    private void connectDiaryData() {
+        viewModel.getRepo().getAllWaitingDiaries().observe(this, new Observer<List<Diary>>() {
+            @Override
+            public void onChanged(@Nullable List<Diary> diaries) {
+                if (diaries == null) {
+                    Log.d("my_tag", "observer: null in waiting diaries");
+                } else {
+                    if (!passwordEntered)
+                        Repository.filterPrivateDiaries(diaries);
+                    Log.d("my_tag", "observer: updated waiting diaries: " + PrintUtils.joinToString(diaries));
+                    waitingFragment.getDiaryListAdapter().setDiaries(diaries);
+                }
+            }
+        });
+        viewModel.getRepo().getAllDoneDiaries().observe(this, new Observer<List<Diary>>() {
+            @Override
+            public void onChanged(@Nullable List<Diary> diaries) {
+                if (diaries == null) {
+                    Log.d("my_tag", "observer: null in done diaries");
+                } else {
+                    if (!passwordEntered)
+                        Repository.filterPrivateDiaries(diaries);
+                    Log.d("my_tag", "observer: updated done diaries: " + PrintUtils.joinToString(diaries));
+                    doneFragment.getDiaryListAdapter().setDiaries(diaries);
+                }
+            }
+        });
     }
     
     private void checkPermissions() {
@@ -163,23 +226,30 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // handle results of password activities
+        passwordService.onActivityResult(requestCode, resultCode, data);
         
-        if (requestCode == CREATE_DIARY_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                Diary diary = (Diary) data.getSerializableExtra("diary");
-                viewModel.getRepo().insertDiary(diary);
-            }
-        } else if (requestCode == EDIT_DIARY_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                Diary diary = (Diary) data.getSerializableExtra("diary");
+        if ((requestCode == CREATE_DIARY_REQUEST || requestCode == EDIT_DIARY_REQUEST) && resultCode == RESULT_OK) {
+            Diary diary = (Diary) data.getSerializableExtra("diary");
+            
+            if (requestCode == EDIT_DIARY_REQUEST) {
+                // edited diary
                 viewModel.getRepo().updateDiary(diary);
-                
                 if (data.getBooleanExtra("privacyChanged", false)) {
                     showEncryptionDialog(diary);
                 }
-                
-                
+            } else {
+                // created diary
+                viewModel.getRepo().insertDiary(diary);
             }
+            
+            NotificationScheduler.scheduleRemainder(this, diary);
+            
+            // update passwordEntered if we have entered password inside CreateDiaryActivity
+            // (before inserting diary in database)
+            // so, after next update in database passwordEntered will be used
+            passwordEntered = data.getBooleanExtra("passwordEntered", passwordEntered);
+            
         }
     }
     
@@ -192,7 +262,7 @@ public class MainActivity extends FragmentActivity {
     public void openActivityForEditing(Diary diary) {
         
         Intent intent = new Intent(this, CreateDiaryActivity.class);
-        
+        intent.putExtra("passwordEntered", passwordEntered);
         intent.putExtra("oldDiary", diary);
         
         startActivityForResult(intent, EDIT_DIARY_REQUEST);
@@ -201,6 +271,8 @@ public class MainActivity extends FragmentActivity {
     public void openDiaryActivity(Diary diary) {
         final Intent intent = new Intent(this, DiaryActivity.class);
         intent.putExtra("diary", diary);
+        
+        startActivity(intent);
     }
     
     @Override

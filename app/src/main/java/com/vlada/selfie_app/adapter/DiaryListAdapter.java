@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.vlada.selfie_app.R;
 import com.vlada.selfie_app.ViewModel;
 import com.vlada.selfie_app.activity.MainActivity;
+import com.vlada.selfie_app.database.Repository;
 import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
@@ -156,7 +157,31 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteDiary(diary, checkedItems[0]);
+                        final boolean deleteSourceFiles = checkedItems[0];
+                        
+                        viewModel.getRepo().deleteDiary(diary, deleteSourceFiles, new Repository.DeleteDiaryCallback() {
+                            @Override
+                            public void onResult(int sourcesCount, int encodedCount, int allImagesCount) {
+                                if (deleteSourceFiles || diary.isPrivate()) {
+                                    String message = "Deleted:\n";
+                                    if (deleteSourceFiles) {
+                                        message += "" + sourcesCount + " source image files\n";
+                                    }
+                                    if (diary.isPrivate()) {
+                                        message += "" + encodedCount + " encoded image files\n";
+                                    }
+                                    message += "from " + allImagesCount + " images";
+    
+                                    final String finalMessage = message;
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(activity, finalMessage, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
                 })
                 .create()
@@ -164,48 +189,6 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
     }
     
     
-    private void deleteDiary(final Diary diary, final boolean deleteSourceFiles) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                
-                ImageSourceDao imageSourceDao = viewModel.getRepo().getDatabase().imageSourceDao();
-                List<ImageSource> imageSources = imageSourceDao.getImagesForDiary(diary.getId());
-                
-                int sourcesCount = 0;
-                int encodedCount = 0;
-                for (ImageSource imageSource : imageSources) {
-                    if (diary.isPrivate()) {
-                        encodedCount += FileUtils.deleteImageIfExists(imageSource.getEncodedFile()) ? 1 : 0;
-                    }
-                    if (deleteSourceFiles) {
-                        sourcesCount += FileUtils.deleteImageIfExists(imageSource.getSourceFile()) ? 1 : 0;
-                    }
-                }
-                
-                viewModel.getRepo().getDatabase().diaryDao().deleteById(diary.getId());
-                
-                if (deleteSourceFiles || diary.isPrivate()) {
-                    String message = "Deleted:\n";
-                    if (deleteSourceFiles) {
-                        message += "" + sourcesCount + " source image files\n";
-                    }
-                    if (diary.isPrivate()) {
-                        message += "" + encodedCount + " encoded image files\n";
-                    }
-                    message += "from " + imageSources.size() + " images";
-    
-                    final String finalMessage = message;
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(activity, finalMessage, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
     
     /**
      * Updates diaries in rv, using diffUtil

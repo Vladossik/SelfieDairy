@@ -9,42 +9,36 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.vlada.selfie_app.PasswordService;
 import com.vlada.selfie_app.R;
 
 public class EnterPasswordActivity extends AppCompatActivity {
-
-    EditText editText;
-    Button button;
-
-    String password;
-
+    
+    private static final int CREATE_PASSWORD_REQUEST = 252;
+    EditText etPassword;
+    Button btnEnter;
+    String correctPassword;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_password);
-
-        //load the password
-        SharedPreferences settings = getSharedPreferences("PREFS",0);
-        password = settings.getString("password","");
-
-        editText = (EditText)  findViewById(R.id.editText);
-        button = (Button) findViewById(R.id.button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = editText.getText().toString();
-
-                if(text.equals(password))
-                {
-                    //enter the app
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else{
-                    Toast.makeText(EnterPasswordActivity.this,"Wrong password!",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        
+        correctPassword = getIntent().getStringExtra("password");
+        
+        etPassword = findViewById(R.id.etPassword);
+        btnEnter = findViewById(R.id.btnEnter);
+    }
+    
+    public void btnEnterClick(View v) {
+        String text = etPassword.getText().toString();
+        
+        if (!text.equals(correctPassword)) {
+            Toast.makeText(this, "Wrong password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        setResult(RESULT_OK);
+        finish();
     }
 }
