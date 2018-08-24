@@ -151,7 +151,6 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
         
         new AlertDialog.Builder(activity)
                 .setTitle("Removing " + diary.getName())
-                .setMessage("Are you sure?")
                 .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {

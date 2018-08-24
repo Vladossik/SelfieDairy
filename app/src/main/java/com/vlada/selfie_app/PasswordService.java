@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.vlada.selfie_app.activity.CreatePasswordActivity;
 import com.vlada.selfie_app.activity.EnterPasswordActivity;
@@ -53,13 +54,27 @@ public class PasswordService {
     }
     
     public void deletePasswordWithDialog(final @Nullable Runnable onSuccess) {
+        String[] items = new String[]{"I agree, that all my private diaries will be deleted."};
+        final boolean[] checkedItems = new boolean[]{false};
+        
         new AlertDialog.Builder(activity)
-                .setTitle("Remove password")
-                .setMessage("All private diaries will be deleted!")
+                .setTitle("Password reset.")
+                .setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checkedItems[which] = isChecked;
+                    }
+                })
                 .setCancelable(true)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // user is not sure
+                        if (!checkedItems[0]) {
+                            Toast.makeText(activity, "Canceled.\nYou need to tap on the checkbox to succeed.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        
                         removePassword();
                         ViewModelProviders.of(activity).get(ViewModel.class)
                                 .getRepo().deleteAllPrivateDiaries(activity, onSuccess);
