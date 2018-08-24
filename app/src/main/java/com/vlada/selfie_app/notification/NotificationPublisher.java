@@ -25,18 +25,16 @@ public class NotificationPublisher {
         // needed only for android 8
         createNotificationChannel(context);
         
-        Intent intent = new Intent(context, DiaryActivity.class);
-        intent.putExtra("diary", diary);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // Creating pending intent for MainActivity
+        // it will open right diary after start and will ask a password if necessary
         
-        // Creating pending intent with back stack
+        
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("diaryToStart", diary);
         
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // Adds the back stack
-        stackBuilder.addParentStack(DiaryActivity.class);
-        // Adds the Intent to the top of the stack
+//        stackBuilder.addParentStack(DiaryActivity.class); // adds backstack for DiaryActivity from manifest
         stackBuilder.addNextIntent(intent);
-        // Gets a PendingIntent containing the entire back stack
         PendingIntent pendingIntent =
                 stackBuilder.getPendingIntent(diary.getId(), PendingIntent.FLAG_UPDATE_CURRENT);
         
@@ -54,7 +52,6 @@ public class NotificationPublisher {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         
         mNotificationManager.notify(diary.getId(), notification);
-        
     }
     
     

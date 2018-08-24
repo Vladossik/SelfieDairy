@@ -160,10 +160,24 @@ public class MainActivity extends FragmentActivity {
             }
         });
         
+        
         // connecting to database with diaries and asking a password
         
         passwordService = new PasswordService(this);
-        if (passwordService.hasPassword()) {
+        // we haven't entered any password yet, but default value is true
+        setPasswordEntered(false);
+        
+        // diary to start DiaryActivity if this activity was called from notification
+        final Diary diaryToStart = (Diary) getIntent().getSerializableExtra("diaryToStart");
+        
+        if (diaryToStart != null && !diaryToStart.isPrivate()) {
+            // we have a non-private diary to start, so we don't ask any password,
+            // just load non-private diaries and start DiaryActivity
+            connectDiaryData();
+            openDiaryActivity(diaryToStart);
+        }
+        else if (passwordService.hasPassword()) {
+            // we don't have non-private diary to start, but we have a password
             passwordService.askPasswordOrCreate(new BooleanCallback() {
                 @Override
                 public void onResult(boolean result) {
@@ -174,9 +188,15 @@ public class MainActivity extends FragmentActivity {
                                 "Password was not entered. Private diaries are hidden!", Toast.LENGTH_SHORT).show();
                     }
                     connectDiaryData();
+                    
+                    if (diaryToStart != null && result) {
+                        // we have private diary and we have entered password
+                        openDiaryActivity(diaryToStart);
+                    }
                 }
             });
         } else {
+            // we don't have a password or a diaryToStart
             connectDiaryData();
         }
     }
