@@ -8,6 +8,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import com.vlada.selfie_app.database.dao.ImageSourceDao;
 import com.vlada.selfie_app.database.entity.Diary;
 import com.vlada.selfie_app.database.entity.ImageSource;
 import com.vlada.selfie_app.utils.FileUtils;
+import com.vlada.selfie_app.utils.PrintUtils;
 
 import java.io.File;
 import java.util.List;
@@ -202,8 +204,6 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
         if (value != showPrivateDiaries) {
             showPrivateDiaries = value;
             onShowPrivateDiariesChanged();
-        } else {
-            this.showPrivateDiaries = value;
         }
     }
     
@@ -226,7 +226,12 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
         }
         
         if (diaries != null && newDiaries != null) {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(this.diaries, newDiaries));
+    
+//            Log.d("my_tag", "setDiaries: \n\toldDiaries: " + PrintUtils.joinToString(diaries) 
+//                    + "\n\tnewDiaries: " + PrintUtils.joinToString(newDiaries)
+//            + "\n\textraDiaries: " + PrintUtils.joinToString(extraDiaries));
+            
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new MyDiffCallback(diaries, newDiaries));
             diaries = newDiaries;
             diffResult.dispatchUpdatesTo(this);
         } else {
@@ -261,7 +266,10 @@ public class DiaryListAdapter extends RecyclerView.Adapter<DiaryListAdapter.Diar
         
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldDiaries.get(oldItemPosition).equals(newDiaries.get(newItemPosition));
+//            return oldDiaries.get(oldItemPosition).equals(newDiaries.get(newItemPosition));
+            // ????????????????????????????? ok, it works. don't know why.
+            // we need to update onclick listeners even if data is the same
+            return false;
         }
     }
     

@@ -113,7 +113,7 @@ public class Diary implements Serializable{
     
     @Override
     public String toString() {
-        return "Diary(name = " + name + ")";
+        return "Diary(name=" + name + ", id=" + id + ")";
     }
     
     public boolean isPrivate() {

@@ -47,6 +47,8 @@ public class MainActivity extends FragmentActivity {
     
     public static final int CREATE_DIARY_REQUEST = 1;
     public static final int EDIT_DIARY_REQUEST = 2;
+    private static final int OPEN_SETTINGS_REQUEST = 3;
+    
     private TabLayout tabLayout;
     private AppBarLayout appBarLayout;
     private ViewPager viewPager;
@@ -139,52 +141,14 @@ public class MainActivity extends FragmentActivity {
         doneFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
         waitingFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
         
-        
-        
-        findViewById(R.id.btnDeleteAvatar).setOnClickListener(new View.OnClickListener() {
+        ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileUtils.deleteImageIfExists(FileUtils.getAvatarFile(MainActivity.this));
-                updateAvatar();
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                intent.putExtra("passwordEntered", isPasswordEntered());
+                startActivityForResult(intent, OPEN_SETTINGS_REQUEST);
             }
         });
-        findViewById(R.id.btnChangeAvatarGravity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenPhotoActivity.showAvatarGravityDialog(MainActivity.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        updateAvatar();
-                    }
-                });
-            }
-        });
-        findViewById(R.id.btnRemovePassword).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                passwordService.deletePasswordWithDialog(new Runnable() {
-                    @Override
-                    public void run() {
-                        setPasswordEntered(false);
-                        Toast.makeText(MainActivity.this, "Done!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-        findViewById(R.id.btnChangePassword).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                passwordService.changePasswordOrCreate(new BooleanCallback() {
-                    @Override
-                    public void onResult(boolean result) {
-                        if (result) {
-                            setPasswordEntered(true);
-                        }
-                    }
-                });
-            }
-        });
-        
         
         // connecting to database with diaries and asking a password
         
@@ -285,9 +249,11 @@ public class MainActivity extends FragmentActivity {
             NotificationScheduler.scheduleRemainder(this, diary);
             
             // update passwordEntered if we have entered password inside CreateDiaryActivity
-            // (before inserting diary in database)
             setPasswordEntered(data.getBooleanExtra("passwordEntered", isPasswordEntered()));
-            
+        }
+        
+        if (requestCode == OPEN_SETTINGS_REQUEST) {
+            setPasswordEntered(data.getBooleanExtra("passwordEntered", isPasswordEntered()));
         }
     }
     

@@ -1,24 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Design.CoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     android:orientation="vertical">
 
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:background="@color/colorPrimaryDark"
-        android:src="@drawable/pictures_folder"
-        app:civ_border_color="#ffffff"
-        app:civ_border_width="1dp"
-        app:layout_collapseMode="parallax"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-</android.support.design.widget.CoordinatorLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="32dp"
+                android:background="@color/colorPrimaryDark"
+                android:src="@drawable/pictures_folder"
+                app:civ_border_color="#ffffff"
+                app:civ_border_width="1dp"
+                app:layout_collapseMode="parallax"/>
+
+            <Button
+                android:id="@+id/btnDeleteAvatar"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="delete avatar"/>
+
+            <Button
+                android:id="@+id/btnChangeAvatarGravity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="set avatar gravity"/>
+
+            <Button
+                android:id="@+id/btnRemovePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="delete password"/>
+
+            <Button
+                android:id="@+id/btnChangePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="change or create password"/>
+
+            <Switch
+                android:id="@+id/swchAskPasswordOnStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ask password on start"
+                android:textColor="@color/justWhite"
+                />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
