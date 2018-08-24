@@ -58,6 +58,7 @@ public class MainActivity extends FragmentActivity {
     
     private PasswordService passwordService;
     private boolean passwordEntered;
+    private FloatingActionButton btnEnterPassword;
     
     private boolean isPasswordEntered() {
         return passwordEntered;
@@ -71,6 +72,13 @@ public class MainActivity extends FragmentActivity {
         waitingFragment.getDiaryListAdapter().setShowPrivateDiaries(passwordEntered);
         doneFragment.getDiaryListAdapter().setShowPrivateDiaries(passwordEntered);
         this.passwordEntered = passwordEntered;
+        
+        if (passwordEntered || !passwordService.hasPassword()) {
+            btnEnterPassword.hide();
+        } else {
+            // just in case
+            btnEnterPassword.show();
+        }
     }
     
     @Override
@@ -86,7 +94,7 @@ public class MainActivity extends FragmentActivity {
         ivAvatar = findViewById(R.id.ivAvatar);
         
         ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        //adding fragments
+        // adding fragments
         
         waitingFragment = new DiaryListFragment();
         doneFragment = new DiaryListFragment();
@@ -94,12 +102,14 @@ public class MainActivity extends FragmentActivity {
         vpAdapter.addFragment(waitingFragment, "Expect");
         vpAdapter.addFragment(doneFragment, "Done");
         
-        //adapter Setup
+        // adapter Setup
         viewPager.setAdapter(vpAdapter);
         tabLayout.setupWithViewPager(viewPager);
         
         // fab setup
         fab = findViewById(R.id.fab);
+        btnEnterPassword = findViewById(R.id.btnEnterPassword);
+        
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,12 +119,27 @@ public class MainActivity extends FragmentActivity {
             }
         });
         
+        btnEnterPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passwordService.askPasswordOrCreate(new BooleanCallback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        setPasswordEntered(result);
+                    }
+                });
+            }
+        });
+        
+        
         // setup database in viewModel
         viewModel = ViewModelProviders.of(this).get(ViewModel.class);
         
         // connect viewModel with diaryListAdapter in fragments
         doneFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
         waitingFragment.setDiaryListAdapter(new DiaryListAdapter(this, viewModel));
+        
+        
         
         findViewById(R.id.btnDeleteAvatar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,39 +191,30 @@ public class MainActivity extends FragmentActivity {
         passwordService = new PasswordService(this);
         // we haven't entered any password yet, but default value is true
         setPasswordEntered(false);
-        
+        connectDiaryData();
+    
         // diary to start DiaryActivity if this activity was called from notification
         final Diary diaryToStart = (Diary) getIntent().getSerializableExtra("diaryToStart");
         
-        if (diaryToStart != null && !diaryToStart.isPrivate()) {
-            // we have a non-private diary to start, so we don't ask any password,
-            // just load non-private diaries and start DiaryActivity
-            connectDiaryData();
-            openDiaryActivity(diaryToStart);
-        }
-        else if (passwordService.hasPassword()) {
-            // we don't have non-private diary to start, but we have a password
-            passwordService.askPasswordOrCreate(new BooleanCallback() {
-                @Override
-                public void onResult(boolean result) {
-                    // show private diaries only if we have entered the password
-                    setPasswordEntered(result);
-                    if (!isPasswordEntered()) {
-                        Toast.makeText(MainActivity.this,
-                                "Password was not entered. Private diaries are hidden!", Toast.LENGTH_SHORT).show();
+        
+        if (diaryToStart != null) {
+            if (diaryToStart.isPrivate()) {
+                passwordService.askPasswordOrCreate(new BooleanCallback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        setPasswordEntered(result);
+                        if (result) {
+                            openDiaryActivity(diaryToStart);
+                        }
                     }
-                    connectDiaryData();
-                    
-                    if (diaryToStart != null && result) {
-                        // we have private diary and we have entered password
-                        openDiaryActivity(diaryToStart);
-                    }
-                }
-            });
-        } else {
-            // we don't have a password or a diaryToStart
-            connectDiaryData();
+                });
+            } else {
+                // just load non-private diary
+                openDiaryActivity(diaryToStart);
+            }
         }
+        
+        
     }
     
     private void connectDiaryData() {
