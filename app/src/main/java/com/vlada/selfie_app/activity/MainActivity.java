@@ -3,7 +3,6 @@ package com.vlada.selfie_app.activity;
 import android.Manifest;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -25,7 +23,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.vlada.selfie_app.PasswordService;
-import com.vlada.selfie_app.database.Repository;
 import com.vlada.selfie_app.notification.NotificationScheduler;
 import com.vlada.selfie_app.utils.BooleanCallback;
 import com.vlada.selfie_app.utils.FileUtils;
@@ -60,7 +57,7 @@ public class MainActivity extends FragmentActivity {
     
     private PasswordService passwordService;
     private boolean passwordEntered;
-    private FloatingActionButton btnEnterPassword;
+    private FloatingActionButton btnAskPassword;
     
     private boolean isPasswordEntered() {
         return passwordEntered;
@@ -76,11 +73,16 @@ public class MainActivity extends FragmentActivity {
         this.passwordEntered = passwordEntered;
         
         if (passwordEntered || !passwordService.hasPassword()) {
-            btnEnterPassword.hide();
+            btnAskPassword.hide();
         } else {
             // just in case
-            btnEnterPassword.show();
+            btnAskPassword.show();
         }
+    }
+    
+    private boolean shouldAskPasswordOnStart() {
+        SharedPreferences settings = getSharedPreferences("settings", 0);
+        return settings.getBoolean("askPasswordOnStart", false);
     }
     
     @Override
@@ -110,7 +112,7 @@ public class MainActivity extends FragmentActivity {
         
         // fab setup
         fab = findViewById(R.id.fab);
-        btnEnterPassword = findViewById(R.id.btnEnterPassword);
+        btnAskPassword = findViewById(R.id.btnAskPassword);
         
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +123,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
         
-        btnEnterPassword.setOnClickListener(new View.OnClickListener() {
+        btnAskPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 passwordService.askPasswordOrCreate(new BooleanCallback() {
@@ -178,7 +180,9 @@ public class MainActivity extends FragmentActivity {
             }
         }
         
-        
+        if (diaryToStart == null && shouldAskPasswordOnStart() && passwordService.hasPassword()) {
+            btnAskPassword.callOnClick();
+        }
     }
     
     private void connectDiaryData() {

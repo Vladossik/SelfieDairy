@@ -107,6 +107,12 @@ public class SettingsActivity extends AppCompatActivity {
     }
     
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        passwordService.onActivityResult(requestCode, resultCode, data);
+    }
+    
+    @Override
     public void finish() {
         Intent intent = new Intent();
         intent.putExtra("passwordEntered", passwordEntered);
