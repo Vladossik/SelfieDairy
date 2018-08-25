@@ -1,6 +1,8 @@
 package com.vlada.selfie_app.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -76,7 +78,7 @@ public class OpenPhotoActivity extends AppCompatActivity {
         imageFile = ImageLoading.getDecodedImage(OpenPhotoActivity.this, imageSource);
         ImageLoading.loadImageInView(imageFile, ivPhoto);
         
-        tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
+        tvDateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm")
                 .format(imageSource.getDateOfCreate().getTime()));
         
         
@@ -146,6 +148,16 @@ public class OpenPhotoActivity extends AppCompatActivity {
             share.setType("image/jpeg");
             share.putExtra(Intent.EXTRA_STREAM, getUriFromFile(imageFile));
             startActivity(Intent.createChooser(share, "Share Image"));
+            
+            // Copying description to clipboard
+            
+            String description = etPhotoDescription.getText().toString();
+            if (!description.trim().equals("")) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("photo description", description);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(this, "Description was copied to clipboard", Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {
             Toast.makeText(OpenPhotoActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }

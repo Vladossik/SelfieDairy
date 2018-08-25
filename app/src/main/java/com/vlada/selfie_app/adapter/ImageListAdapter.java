@@ -81,7 +81,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         if (images != null) {
             final ImageSource imageSource = images.get(position);
             
-            holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy")
+            holder.dateOfCreate.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm")
                     .format(imageSource.getDateOfCreate().getTime()));
             Log.d("my_tag", "onBindViewHolder-" + position + ": received path: " + imageSource.getSource());
             
