@@ -55,14 +55,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="btnAvatarClick"
-                    android:text="set as avatar"/>
+                    android:text="set as avatar"
+                    android:fontFamily="@font/roboto"/>
 
                 <Button
                     android:id="@+id/btnShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="btnShareClick"
-                    android:text="Share"/>
+                    android:text="Share"
+                    android:fontFamily="@font/roboto"/>
             </LinearLayout>
 
             <View

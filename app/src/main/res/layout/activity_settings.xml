@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
 
     <ScrollView
@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:background="@color/colorPrimaryDark">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ivAvatar"
@@ -33,38 +34,49 @@
                 app:civ_border_width="1dp"
                 app:layout_collapseMode="parallax"/>
 
-            <Button
-                android:id="@+id/btnDeleteAvatar"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="delete avatar"/>
+                <Button
+                    android:id="@+id/btnChangeAvatarGravity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="set avatar gravity"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorAccent"/>
 
-            <Button
-                android:id="@+id/btnChangeAvatarGravity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="set avatar gravity"/>
+                <Button
+                    android:id="@+id/btnDeleteAvatar"
+                    style="@style/Widget.AppCompat.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="delete avatar"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorAccent"/>
 
-            <Button
-                android:id="@+id/btnRemovePassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="delete password"/>
+                <Button
+                    android:id="@+id/btnChangePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="change or create password"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorAccent"/>
 
-            <Button
-                android:id="@+id/btnChangePassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="change or create password"/>
+                <Button
+                    android:id="@+id/btnRemovePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="delete password"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorAccent"/>
 
-            <Switch
-                android:id="@+id/swchAskPasswordOnStart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ask password on start"
-                android:textColor="@color/justWhite"
-                />
+
+                <Switch
+                    android:id="@+id/swchAskPasswordOnStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ASK PASSWORD ON START"
+                    android:textColor="@color/colorAccent"
+                    android:fontFamily="@font/roboto"
+                    />
+
         </LinearLayout>
     </ScrollView>
 
