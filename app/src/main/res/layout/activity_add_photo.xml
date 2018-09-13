@@ -55,9 +55,9 @@
                 android:id="@+id/etPhotoDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
                 android:fontFamily="@font/roboto"
                 android:hint="@string/aboutAdded"
+                android:ems="10"
                 android:inputType="textMultiLine"
                 android:maxLines="15"
                 android:scrollbars="vertical"/>

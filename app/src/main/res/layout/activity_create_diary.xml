@@ -46,16 +46,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
-            android:ems="1"
             android:fontFamily="@font/roboto"
             android:hint="Add description"
             android:lines="1"
-            android:maxLines="1"
-            android:maxWidth="277dp" />
+            android:maxWidth="277dp"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:maxLines="15"
+            android:scrollbars="vertical"
+           />
 
-        <!--android:ems="10"-->
-        <!--android:scrollbars="vertical"-->
-        <!--android:inputType="textMultiLine"-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

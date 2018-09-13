@@ -53,6 +53,8 @@ public class ImageLoading {
     
     public static boolean clearImageCache(Context context) {
         File cacheFolder = FileUtils.getImageCacheFolder(context);
+        if (!cacheFolder.exists()) return false;
+        
         File[] images = cacheFolder.listFiles();
         int counter = 0;
         for (File image : images) {
@@ -61,7 +63,7 @@ public class ImageLoading {
                 counter++;
         }
         
-        Log.d("my_tag", "clearImageCache: deleted " 
+        Log.d("my_tag", "clearImageCache: deleted "
                 + counter + " images from " + images.length + " in " + cacheFolder.getAbsolutePath());
         
         return counter > 0 && counter == images.length;
