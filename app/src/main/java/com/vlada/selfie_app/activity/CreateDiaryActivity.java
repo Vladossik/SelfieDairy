@@ -141,6 +141,13 @@ public class CreateDiaryActivity extends AppCompatActivity {
      * Builds diary and returns it in case of success to result intent and finishes activity.
      */
     private void saveDiary() {
+        if (!inEditMode && RemindFrequency.values()[spnRemindFrequency.getSelectedItemPosition()] != RemindFrequency.Never) {
+            Toast.makeText(this, "Верните переключатель с уведомлениями на место, а то всё сломаете!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Переделаете когда сохраните дневник.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Вот.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         
         if (etName.getText().toString().equals("")) {
             Toast.makeText(this, "Name shouldn't be empty.", Toast.LENGTH_SHORT).show();
