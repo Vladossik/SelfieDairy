@@ -41,16 +41,18 @@
                     android:layout_height="wrap_content"
                     android:text="set avatar gravity"
                     android:background="@color/colorPrimaryDark"
-                    android:textColor="@color/colorAccent"/>
+                    android:textColor="@color/colorAccent"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    />
 
                 <Button
                     android:id="@+id/btnDeleteAvatar"
-                    style="@style/Widget.AppCompat.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="delete avatar"
                     android:background="@color/colorPrimaryDark"
-                    android:textColor="@color/colorAccent"/>
+                    android:textColor="@color/colorAccent"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
                 <Button
                     android:id="@+id/btnChangePassword"
@@ -58,7 +60,8 @@
                     android:layout_height="wrap_content"
                     android:text="change or create password"
                     android:background="@color/colorPrimaryDark"
-                    android:textColor="@color/colorAccent"/>
+                    android:textColor="@color/colorAccent"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
                 <Button
                     android:id="@+id/btnRemovePassword"
@@ -66,7 +69,8 @@
                     android:layout_height="wrap_content"
                     android:text="delete password"
                     android:background="@color/colorPrimaryDark"
-                    android:textColor="@color/colorAccent"/>
+                    android:textColor="@color/colorAccent"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"/>
 
 
                 <Switch

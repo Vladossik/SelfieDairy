@@ -24,13 +24,11 @@ public class Encryption {
     private Encryption() {
     }
     
-    
     private static Crypto getCrypto(Context context) {
         // Generate key for this device in sharedPrefs. So we couldn't share emcrypted files between devices.
         KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
         return AndroidConceal.get().createDefaultCrypto(keyChain);
     }
-    
     
     public static void encryptBytes(Context context, byte[] inputBytes, OutputStream outputStream) throws Exception {
         Crypto crypto = getCrypto(context);
